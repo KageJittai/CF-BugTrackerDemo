@@ -17,13 +17,13 @@ namespace BugTrackerDemo.Models
         public Project()
         {
             this.Tickets = new HashSet<Ticket>();
-            this.Users = new HashSet<User>();
+            this.UserProjectRoles = new HashSet<UserProjectRole>();
         }
     
         public int Id { get; set; }
         public string Name { get; set; }
     
         public virtual ICollection<Ticket> Tickets { get; set; }
-        public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<UserProjectRole> UserProjectRoles { get; set; }
     }
 }

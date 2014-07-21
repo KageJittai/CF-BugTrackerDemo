@@ -33,8 +33,8 @@ namespace BugTrackerDemo.Models
         public virtual TicketPriority TicketPriority { get; set; }
         public virtual TicketStatus TicketStatus { get; set; }
         public virtual TicketType TicketType { get; set; }
-        public virtual User Owner { get; set; }
-        public virtual User Assignee { get; set; }
+        public virtual UserModel Owner { get; set; }
+        public virtual UserModel Assignee { get; set; }
         public virtual ICollection<TicketComment> TicketComments { get; set; }
         public virtual Project Project { get; set; }
     }

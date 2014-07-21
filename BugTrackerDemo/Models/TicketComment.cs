@@ -20,6 +20,6 @@ namespace BugTrackerDemo.Models
         public string Message { get; set; }
     
         public virtual Ticket Ticket { get; set; }
-        public virtual User Poster { get; set; }
+        public virtual UserModel Poster { get; set; }
     }
 }

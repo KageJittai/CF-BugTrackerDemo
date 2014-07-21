@@ -15,8 +15,9 @@ using BugTrackerDemo.Models;
 namespace BugTrackerDemo.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
+        #region UserManager
         private ApplicationUserManager _userManager;
 
         public AccountController()
@@ -38,7 +39,9 @@ namespace BugTrackerDemo.Controllers
                 _userManager = value;
             }
         }
+        #endregion
 
+        #region Login
         //
         // GET: /Account/Login
         [AllowAnonymous]
@@ -73,6 +76,10 @@ namespace BugTrackerDemo.Controllers
             return View(model);
         }
 
+        #endregion
+
+        #region Register
+
         //
         // GET: /Account/Register
         [AllowAnonymous]
@@ -94,6 +101,15 @@ namespace BugTrackerDemo.Controllers
                 IdentityResult result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+
+                    // Insert a new row into our custom user table
+                    var userModel = new UserModel();
+                    userModel.Email = user.UserName;
+                    userModel.FirstName = model.FirstName;
+                    userModel.LastName = model.LastName;
+                    db.UserModels.Add(userModel);
+                    db.SaveChanges();
+
                     await SignInAsync(user, isPersistent: false);
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
@@ -114,6 +130,9 @@ namespace BugTrackerDemo.Controllers
             return View(model);
         }
 
+        #endregion
+
+        #region ConfirmEmail
         //
         // GET: /Account/ConfirmEmail
         [AllowAnonymous]
@@ -136,6 +155,9 @@ namespace BugTrackerDemo.Controllers
             }
         }
 
+        #endregion
+
+        #region ForgotPassword
         //
         // GET: /Account/ForgotPassword
         [AllowAnonymous]
@@ -231,6 +253,10 @@ namespace BugTrackerDemo.Controllers
             return View();
         }
 
+        #endregion
+
+        #region Management
+
         //
         // POST: /Account/Disassociate
         [HttpPost]
@@ -319,6 +345,10 @@ namespace BugTrackerDemo.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+
+        #endregion
+
+        #region ExternalLogin
 
         //
         // POST: /Account/ExternalLogin
@@ -430,12 +460,15 @@ namespace BugTrackerDemo.Controllers
             return View(model);
         }
 
+        #endregion
+
         //
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
+            Session.Clear();
             AuthenticationManager.SignOut();
             return RedirectToAction("Index", "Home");
         }

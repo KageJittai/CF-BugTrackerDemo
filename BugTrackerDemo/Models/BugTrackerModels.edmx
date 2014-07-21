@@ -12,13 +12,12 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
-        <EntityType Name="ProjectUser">
+        <EntityType Name="Role">
           <Key>
-            <PropertyRef Name="UserId" />
-            <PropertyRef Name="ProjectId" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="ProjectId" Type="int" Nullable="false" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Role" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Ticket">
           <Key>
@@ -69,35 +68,21 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="AspId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
-        <Association Name="FK_ProjectUser_Project">
-          <End Role="Project" Type="Self.Project" Multiplicity="1" />
-          <End Role="ProjectUser" Type="Self.ProjectUser" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Project">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="ProjectUser">
-              <PropertyRef Name="ProjectId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ProjectUser_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="ProjectUser" Type="Self.ProjectUser" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="ProjectUser">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
+        <EntityType Name="UserProjectRole">
+          <Key>
+            <PropertyRef Name="ProjectId" />
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="ProjectId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="RoleId" Type="int" Nullable="false" />
+        </EntityType>
         <Association Name="FK_Ticket_Project">
           <End Role="Project" Type="Self.Project" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
@@ -194,23 +179,52 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_UserProjectRole_Project">
+          <End Role="Project" Type="Self.Project" Multiplicity="1" />
+          <End Role="UserProjectRole" Type="Self.UserProjectRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Project">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserProjectRole">
+              <PropertyRef Name="ProjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserProjectRole_Role">
+          <End Role="Role" Type="Self.Role" Multiplicity="1" />
+          <End Role="UserProjectRole" Type="Self.UserProjectRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserProjectRole">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserProjectRole_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="UserProjectRole" Type="Self.UserProjectRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserProjectRole">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="BugTrackerModelStoreContainer">
           <EntitySet Name="Project" EntityType="Self.Project" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="ProjectUser" EntityType="Self.ProjectUser" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Ticket" EntityType="Self.Ticket" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketComment" EntityType="Self.TicketComment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketPriority" EntityType="Self.TicketPriority" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketStatus" EntityType="Self.TicketStatus" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketType" EntityType="Self.TicketType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_ProjectUser_Project" Association="Self.FK_ProjectUser_Project">
-            <End Role="Project" EntitySet="Project" />
-            <End Role="ProjectUser" EntitySet="ProjectUser" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ProjectUser_User" Association="Self.FK_ProjectUser_User">
-            <End Role="User" EntitySet="User" />
-            <End Role="ProjectUser" EntitySet="ProjectUser" />
-          </AssociationSet>
+          <EntitySet Name="UserProjectRole" EntityType="Self.UserProjectRole" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Ticket_Project" Association="Self.FK_Ticket_Project">
             <End Role="Project" EntitySet="Project" />
             <End Role="Ticket" EntitySet="Ticket" />
@@ -242,6 +256,18 @@
           <AssociationSet Name="FK_TicketComment_User" Association="Self.FK_TicketComment_User">
             <End Role="User" EntitySet="User" />
             <End Role="TicketComment" EntitySet="TicketComment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserProjectRole_Project" Association="Self.FK_UserProjectRole_Project">
+            <End Role="Project" EntitySet="Project" />
+            <End Role="UserProjectRole" EntitySet="UserProjectRole" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserProjectRole_Role" Association="Self.FK_UserProjectRole_Role">
+            <End Role="Role" EntitySet="Role" />
+            <End Role="UserProjectRole" EntitySet="UserProjectRole" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserProjectRole_User" Association="Self.FK_UserProjectRole_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="UserProjectRole" EntitySet="UserProjectRole" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -305,18 +331,18 @@
           <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_TicketType" FromRole="TicketType" ToRole="Ticket" />
         </EntityType>
-        <EntityType Name="User">
+        <EntityType Name="UserModel">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="AspId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="SubmittedTickets" Relationship="Self.FK_Ticket_User" FromRole="User" ToRole="Ticket" />
           <NavigationProperty Name="AssignedTickets" Relationship="Self.FK_Ticket_User1" FromRole="User" ToRole="Ticket" />
           <NavigationProperty Name="TicketComments" Relationship="Self.FK_TicketComment_User" FromRole="User" ToRole="TicketComment" />
-          <NavigationProperty Name="Projects" Relationship="BugTrackerModel.ProjectUser" FromRole="User" ToRole="Project" />
+          <NavigationProperty Name="UserProjectRoles" Relationship="BugTrackerModel.FK_UserProjectRole_User" FromRole="User" ToRole="UserProjectRole" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Ticket_TicketPriority">
           <End Role="TicketPriority" Type="Self.TicketPriority" Multiplicity="1" />
@@ -355,7 +381,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="User" Type="BugTrackerModel.UserModel" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="User">
@@ -367,7 +393,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_User1">
-          <End Role="User" Type="Self.User" Multiplicity="0..1" />
+          <End Role="User" Type="BugTrackerModel.UserModel" Multiplicity="0..1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="User">
@@ -391,7 +417,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_TicketComment_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="User" Type="BugTrackerModel.UserModel" Multiplicity="1" />
           <End Role="TicketComment" Type="Self.TicketComment" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="User">
@@ -408,7 +434,7 @@
           <EntitySet Name="TicketPriorities" EntityType="Self.TicketPriority" />
           <EntitySet Name="TicketStatus1" EntityType="BugTrackerModel.TicketStatus" />
           <EntitySet Name="TicketTypes" EntityType="Self.TicketType" />
-          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="UserModels" EntityType="BugTrackerModel.UserModel" />
           <AssociationSet Name="FK_Ticket_TicketPriority" Association="Self.FK_Ticket_TicketPriority">
             <End Role="TicketPriority" EntitySet="TicketPriorities" />
             <End Role="Ticket" EntitySet="Tickets" />
@@ -422,11 +448,11 @@
             <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
           <AssociationSet Name="FK_Ticket_User" Association="Self.FK_Ticket_User">
-            <End Role="User" EntitySet="Users" />
+            <End Role="User" EntitySet="UserModels" />
             <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
           <AssociationSet Name="FK_Ticket_User1" Association="Self.FK_Ticket_User1">
-            <End Role="User" EntitySet="Users" />
+            <End Role="User" EntitySet="UserModels" />
             <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
           <AssociationSet Name="FK_TicketComment_Ticket" Association="Self.FK_TicketComment_Ticket">
@@ -434,7 +460,7 @@
             <End Role="TicketComment" EntitySet="TicketComments" />
           </AssociationSet>
           <AssociationSet Name="FK_TicketComment_User" Association="Self.FK_TicketComment_User">
-            <End Role="User" EntitySet="Users" />
+            <End Role="User" EntitySet="UserModels" />
             <End Role="TicketComment" EntitySet="TicketComments" />
           </AssociationSet>
           <EntitySet Name="Projects" EntityType="BugTrackerModel.Project" />
@@ -442,9 +468,19 @@
             <End Role="Project" EntitySet="Projects" />
             <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
-          <AssociationSet Name="ProjectUser" Association="BugTrackerModel.ProjectUser">
+          <EntitySet Name="Roles" EntityType="BugTrackerModel.Role" />
+          <EntitySet Name="UserProjectRoles" EntityType="BugTrackerModel.UserProjectRole" />
+          <AssociationSet Name="FK_UserProjectRole_Project" Association="BugTrackerModel.FK_UserProjectRole_Project">
             <End Role="Project" EntitySet="Projects" />
-            <End Role="User" EntitySet="Users" />
+            <End Role="UserProjectRole" EntitySet="UserProjectRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserProjectRole_Role" Association="BugTrackerModel.FK_UserProjectRole_Role">
+            <End Role="Role" EntitySet="Roles" />
+            <End Role="UserProjectRole" EntitySet="UserProjectRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserProjectRole_User" Association="BugTrackerModel.FK_UserProjectRole_User">
+            <End Role="User" EntitySet="UserModels" />
+            <End Role="UserProjectRole" EntitySet="UserProjectRoles" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Project">
@@ -454,7 +490,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Tickets" Relationship="BugTrackerModel.FK_Ticket_Project" FromRole="Project" ToRole="Ticket" />
-          <NavigationProperty Name="Users" Relationship="BugTrackerModel.ProjectUser" FromRole="Project" ToRole="User" />
+          <NavigationProperty Name="UserProjectRoles" Relationship="BugTrackerModel.FK_UserProjectRole_Project" FromRole="Project" ToRole="UserProjectRole" />
         </EntityType>
         <Association Name="FK_Ticket_Project">
           <End Type="BugTrackerModel.Project" Role="Project" Multiplicity="1" />
@@ -468,9 +504,62 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="ProjectUser">
-          <End Type="BugTrackerModel.Project" Role="Project" Multiplicity="*" />
-          <End Type="BugTrackerModel.User" Role="User" Multiplicity="*" />
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Role1" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="UserProjectRoles" Relationship="BugTrackerModel.FK_UserProjectRole_Role" FromRole="Role" ToRole="UserProjectRole" />
+        </EntityType>
+        <EntityType Name="UserProjectRole">
+          <Key>
+            <PropertyRef Name="ProjectId" />
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="ProjectId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="RoleId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Project" Relationship="BugTrackerModel.FK_UserProjectRole_Project" FromRole="UserProjectRole" ToRole="Project" />
+          <NavigationProperty Name="Role" Relationship="BugTrackerModel.FK_UserProjectRole_Role" FromRole="UserProjectRole" ToRole="Role" />
+          <NavigationProperty Name="User" Relationship="BugTrackerModel.FK_UserProjectRole_User" FromRole="UserProjectRole" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_UserProjectRole_Project">
+          <End Type="BugTrackerModel.Project" Role="Project" Multiplicity="1" />
+          <End Type="BugTrackerModel.UserProjectRole" Role="UserProjectRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Project">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserProjectRole">
+              <PropertyRef Name="ProjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserProjectRole_Role">
+          <End Type="BugTrackerModel.Role" Role="Role" Multiplicity="1" />
+          <End Type="BugTrackerModel.UserProjectRole" Role="UserProjectRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserProjectRole">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserProjectRole_User">
+          <End Type="BugTrackerModel.UserModel" Role="User" Multiplicity="1" />
+          <End Type="BugTrackerModel.UserProjectRole" Role="UserProjectRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserProjectRole">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -528,10 +617,10 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Users">
-            <EntityTypeMapping TypeName="BugTrackerModel.User">
+          <EntitySetMapping Name="UserModels">
+            <EntityTypeMapping TypeName="BugTrackerModel.UserModel">
               <MappingFragment StoreEntitySet="User">
-                <ScalarProperty Name="AspId" ColumnName="AspId" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
@@ -546,14 +635,23 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="ProjectUser" TypeName="BugTrackerModel.ProjectUser" StoreEntitySet="ProjectUser">
-            <EndProperty Name="User">
-              <ScalarProperty Name="Id" ColumnName="UserId" />
-            </EndProperty>
-            <EndProperty Name="Project">
-              <ScalarProperty Name="Id" ColumnName="ProjectId" />
-            </EndProperty>
-          </AssociationSetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="BugTrackerModel.Role">
+              <MappingFragment StoreEntitySet="Role">
+                <ScalarProperty Name="Role1" ColumnName="Role" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserProjectRoles">
+            <EntityTypeMapping TypeName="BugTrackerModel.UserProjectRole">
+              <MappingFragment StoreEntitySet="UserProjectRole">
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

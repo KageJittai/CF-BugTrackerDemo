@@ -30,7 +30,9 @@ namespace BugTrackerDemo.Models
         public virtual DbSet<TicketPriority> TicketPriorities { get; set; }
         public virtual DbSet<TicketStatus> TicketStatus1 { get; set; }
         public virtual DbSet<TicketType> TicketTypes { get; set; }
-        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserModel> UserModels { get; set; }
         public virtual DbSet<Project> Projects { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<UserProjectRole> UserProjectRoles { get; set; }
     }
 }

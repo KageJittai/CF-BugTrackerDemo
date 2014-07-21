@@ -10,7 +10,7 @@
         <EntityTypeShape EntityType="BugTrackerModel.TicketPriority" Width="1.5" PointX="1.5" PointY="0.5" IsExpanded="true" />
         <EntityTypeShape EntityType="BugTrackerModel.TicketStatus" Width="1.5" PointX="3.25" PointY="0.5" IsExpanded="true" />
         <EntityTypeShape EntityType="BugTrackerModel.TicketType" Width="1.5" PointX="4.875" PointY="0.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="BugTrackerModel.User" Width="1.5" PointX="6" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BugTrackerModel.UserModel" Width="1.5" PointX="6" PointY="2.875" IsExpanded="true" />
         <AssociationConnector Association="BugTrackerModel.FK_Ticket_TicketPriority" ManuallyRouted="false" />
         <AssociationConnector Association="BugTrackerModel.FK_Ticket_TicketStatus" ManuallyRouted="false" />
         <AssociationConnector Association="BugTrackerModel.FK_Ticket_TicketType" ManuallyRouted="false" />
@@ -21,6 +21,11 @@
         <EntityTypeShape EntityType="BugTrackerModel.Project" Width="1.5" PointX="1" PointY="2.75" />
         <AssociationConnector Association="BugTrackerModel.FK_Ticket_Project" />
         <AssociationConnector Association="BugTrackerModel.ProjectUser" />
+        <EntityTypeShape EntityType="BugTrackerModel.Role" Width="1.5" PointX="6" PointY="6.125" />
+        <EntityTypeShape EntityType="BugTrackerModel.UserProjectRole" Width="1.5" PointX="8.25" PointY="2.875" />
+        <AssociationConnector Association="BugTrackerModel.FK_UserProjectRole_Project" />
+        <AssociationConnector Association="BugTrackerModel.FK_UserProjectRole_Role" />
+        <AssociationConnector Association="BugTrackerModel.FK_UserProjectRole_User" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

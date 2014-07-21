@@ -10,6 +10,9 @@ namespace BugTrackerDemo.Controllers
     {
         public ActionResult Index()
         {
+            ViewBag.message = "Blah";
+
+
             return View();
         }
 

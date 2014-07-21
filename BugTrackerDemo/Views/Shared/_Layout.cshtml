@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using BugTrackerDemo.Models
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -17,14 +19,36 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @**Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })*@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
+                    @if(ViewBag.isLoggedIn)
+                    {
+                        PageDataModel page = ViewBag.page;
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project: @page.ProjectName <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            @foreach(var item in page.UserProjectList)
+                            {
+                                <li>@Html.ActionLink((string)item.name, "ChangeProject", "Project", new { id = item.id }, null)</li>
+                            }
+                        </ul>
+                    </li>
+
+                    <li>@Html.ActionLink("Project", "Index", "Project")</li>
+                    
+                    if (page.UserProjectList.Count > 0)
+                    {
+                        if(page.IsSubmitter)
+                        {
+                           <li>@Html.ActionLink("Submit New Ticket", "Create", "Ticket", new { id = page.ProjectId }, null)</li>
+                        }
+                        <li>@Html.ActionLink("View All Tickets", "Index", "Ticket", new { id = page.ProjectId })</li>
+                    }
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                    <li>@Html.ActionLink("Tickets", "Index", "Tickets")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

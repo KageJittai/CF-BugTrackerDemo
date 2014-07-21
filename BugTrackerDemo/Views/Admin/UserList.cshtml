@@ -1,0 +1,26 @@
+﻿@model List<BugTrackerDemo.Models.UserViewModel>
+@{
+    ViewBag.Title = "User List";
+}
+
+<h2>User List</h2>
+
+<table class="table">
+    <tr>
+        <th>Email</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Email</td>
+            <td>@item.FirstName</td>
+            <td>@item.LastName</td>
+            <td></td>
+        </tr>
+    }
+</table>
+
