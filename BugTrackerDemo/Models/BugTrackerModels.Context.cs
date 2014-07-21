@@ -28,7 +28,7 @@ namespace BugTrackerDemo.Models
         public virtual DbSet<Ticket> Tickets { get; set; }
         public virtual DbSet<TicketComment> TicketComments { get; set; }
         public virtual DbSet<TicketPriority> TicketPriorities { get; set; }
-        public virtual DbSet<TicketStatus> TicketStatus1 { get; set; }
+        public virtual DbSet<TicketStatus> TicketStatusList { get; set; }
         public virtual DbSet<TicketType> TicketTypes { get; set; }
         public virtual DbSet<UserModel> UserModels { get; set; }
         public virtual DbSet<Project> Projects { get; set; }

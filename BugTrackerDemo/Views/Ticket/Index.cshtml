@@ -12,13 +12,13 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.Title)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Creation)
+            @Html.DisplayNameFor(model => model.CreationTime)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Updated)
+            @Html.DisplayNameFor(model => model.UpdatedTime)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.TicketPriority.Priority)
@@ -30,13 +30,10 @@
             @Html.DisplayNameFor(model => model.TicketType.Type)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Owner.FirstName)
+            Owner
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Assignee.FirstName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Project.Name)
+            Assigned
         </th>
         <th></th>
     </tr>
@@ -44,13 +41,13 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Description)
+            @Html.DisplayFor(modelItem => item.Title)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Creation)
+            @Html.DisplayFor(modelItem => item.CreationTime)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Updated)
+            @Html.DisplayFor(modelItem => item.UpdatedTime)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.TicketPriority.Priority)
@@ -66,9 +63,6 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Assignee.FirstName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Project.Name)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |

@@ -67,10 +67,7 @@ namespace BugTrackerDemo.App_Start
                 // Build a projectmodel list
                 foreach (var project in projectList)
                 {
-                    // Sometimes a user might have more then one role in a project, so don't add the user to the project list twice
-                    var listItem = new PageDataModel.ProjectListItem{ id = project.Project.Id, name = project.Project.Name };
-                    if (!page.UserProjectList.Contains(listItem))
-                        page.UserProjectList.Add(new PageDataModel.ProjectListItem{ id = project.Project.Id, name = project.Project.Name });
+                    page.UserProjectList[project.Project.Id] = project.Project.Name;
                 }
 
                 if (Session["Project"] == null && projectList.Count > 0)

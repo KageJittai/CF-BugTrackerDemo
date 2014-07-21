@@ -30,9 +30,10 @@
           <Property Name="PriorityId" Type="int" Nullable="false" />
           <Property Name="StatusId" Type="int" Nullable="false" />
           <Property Name="AssigneeId" Type="int" />
-          <Property Name="Description" Type="text" Nullable="false" />
-          <Property Name="Creation" Type="datetime" Nullable="false" />
-          <Property Name="Updated" Type="datetime" Nullable="false" />
+          <Property Name="Description" Type="ntext" Nullable="false" />
+          <Property Name="Creation" Type="datetimeoffset" Precision="0" Nullable="false" />
+          <Property Name="Updated" Type="datetimeoffset" Precision="0" Nullable="false" />
+          <Property Name="Title" Type="ntext" Nullable="false" />
         </EntityType>
         <EntityType Name="TicketComment">
           <Key>
@@ -285,9 +286,7 @@
           <Property Name="PriorityId" Type="Int32" Nullable="false" />
           <Property Name="StatusId" Type="Int32" Nullable="false" />
           <Property Name="AssigneeId" Type="Int32" />
-          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Creation" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Updated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="TicketPriority" Relationship="Self.FK_Ticket_TicketPriority" FromRole="Ticket" ToRole="TicketPriority" />
           <NavigationProperty Name="TicketStatus" Relationship="Self.FK_Ticket_TicketStatus" FromRole="Ticket" ToRole="TicketStatus" />
           <NavigationProperty Name="TicketType" Relationship="Self.FK_Ticket_TicketType" FromRole="Ticket" ToRole="TicketType" />
@@ -295,6 +294,9 @@
           <NavigationProperty Name="Assignee" Relationship="BugTrackerModel.FK_Ticket_User1" FromRole="Ticket" ToRole="User" />
           <NavigationProperty Name="TicketComments" Relationship="Self.FK_TicketComment_Ticket" FromRole="Ticket" ToRole="TicketComment" />
           <NavigationProperty Name="Project" Relationship="BugTrackerModel.FK_Ticket_Project" FromRole="Ticket" ToRole="Project" />
+          <Property Name="CreationTime" Type="DateTimeOffset" Nullable="false" Precision="0" />
+          <Property Name="UpdatedTime" Type="DateTimeOffset" Nullable="false" Precision="0" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="TicketComment">
           <Key>
@@ -432,7 +434,7 @@
           <EntitySet Name="Tickets" EntityType="Self.Ticket" />
           <EntitySet Name="TicketComments" EntityType="Self.TicketComment" />
           <EntitySet Name="TicketPriorities" EntityType="Self.TicketPriority" />
-          <EntitySet Name="TicketStatus1" EntityType="BugTrackerModel.TicketStatus" />
+          <EntitySet Name="TicketStatusList" EntityType="BugTrackerModel.TicketStatus" />
           <EntitySet Name="TicketTypes" EntityType="Self.TicketType" />
           <EntitySet Name="UserModels" EntityType="BugTrackerModel.UserModel" />
           <AssociationSet Name="FK_Ticket_TicketPriority" Association="Self.FK_Ticket_TicketPriority">
@@ -440,7 +442,7 @@
             <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
           <AssociationSet Name="FK_Ticket_TicketStatus" Association="Self.FK_Ticket_TicketStatus">
-            <End Role="TicketStatus" EntitySet="TicketStatus1" />
+            <End Role="TicketStatus" EntitySet="TicketStatusList" />
             <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
           <AssociationSet Name="FK_Ticket_TicketType" Association="Self.FK_Ticket_TicketType">
@@ -570,6 +572,9 @@
           <EntitySetMapping Name="Tickets">
             <EntityTypeMapping TypeName="BugTrackerModel.Ticket">
               <MappingFragment StoreEntitySet="Ticket">
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="UpdatedTime" ColumnName="Updated" />
+                <ScalarProperty Name="CreationTime" ColumnName="Creation" />
                 <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
@@ -578,8 +583,6 @@
                 <ScalarProperty Name="StatusId" ColumnName="StatusId" />
                 <ScalarProperty Name="AssigneeId" ColumnName="AssigneeId" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Creation" ColumnName="Creation" />
-                <ScalarProperty Name="Updated" ColumnName="Updated" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -601,7 +604,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TicketStatus1">
+          <EntitySetMapping Name="TicketStatusList">
             <EntityTypeMapping TypeName="BugTrackerModel.TicketStatus">
               <MappingFragment StoreEntitySet="TicketStatus">
                 <ScalarProperty Name="Id" ColumnName="Id" />

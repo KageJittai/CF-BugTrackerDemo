@@ -27,8 +27,9 @@ namespace BugTrackerDemo.Models
         public int StatusId { get; set; }
         public Nullable<int> AssigneeId { get; set; }
         public string Description { get; set; }
-        public System.DateTime Creation { get; set; }
-        public System.DateTime Updated { get; set; }
+        public System.DateTimeOffset CreationTime { get; set; }
+        public System.DateTimeOffset UpdatedTime { get; set; }
+        public string Title { get; set; }
     
         public virtual TicketPriority TicketPriority { get; set; }
         public virtual TicketStatus TicketStatus { get; set; }

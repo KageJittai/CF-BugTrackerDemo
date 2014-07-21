@@ -28,5 +28,7 @@ namespace BugTrackerDemo.Models
         {
             return new ApplicationDbContext();
         }
+
+        public System.Data.Entity.DbSet<BugTrackerDemo.Models.UserViewModel> UserViewModels { get; set; }
     }
 }

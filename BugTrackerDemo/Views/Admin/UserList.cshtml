@@ -19,7 +19,7 @@
             <td>@item.Email</td>
             <td>@item.FirstName</td>
             <td>@item.LastName</td>
-            <td></td>
+            <td>@Html.ActionLink("Edit", "UserEdit", "Admin", new { id = item.Id }, null)</td>
         </tr>
     }
 </table>

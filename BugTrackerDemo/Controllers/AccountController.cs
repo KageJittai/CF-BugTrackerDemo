@@ -462,7 +462,6 @@ namespace BugTrackerDemo.Controllers
 
         #endregion
 
-        //
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]

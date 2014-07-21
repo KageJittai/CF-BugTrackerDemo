@@ -9,7 +9,7 @@
         <EntityTypeShape EntityType="BugTrackerModel.TicketComment" Width="1.5" PointX="3.5" PointY="6.75" IsExpanded="true" />
         <EntityTypeShape EntityType="BugTrackerModel.TicketPriority" Width="1.5" PointX="1.5" PointY="0.5" IsExpanded="true" />
         <EntityTypeShape EntityType="BugTrackerModel.TicketStatus" Width="1.5" PointX="3.25" PointY="0.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="BugTrackerModel.TicketType" Width="1.5" PointX="4.875" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BugTrackerModel.TicketType" Width="1.5" PointX="5" PointY="0.5" IsExpanded="true" />
         <EntityTypeShape EntityType="BugTrackerModel.UserModel" Width="1.5" PointX="6" PointY="2.875" IsExpanded="true" />
         <AssociationConnector Association="BugTrackerModel.FK_Ticket_TicketPriority" ManuallyRouted="false" />
         <AssociationConnector Association="BugTrackerModel.FK_Ticket_TicketStatus" ManuallyRouted="false" />

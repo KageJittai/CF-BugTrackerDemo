@@ -19,7 +19,7 @@ namespace BugTrackerDemo.Models
             ProjectId = null;
             ProjectName = "No Projects";
 
-            UserProjectList = new List<ProjectListItem>();
+            UserProjectList = new Dictionary<int, string>();
         }
 
         public int? UserId { get; set; }
@@ -32,12 +32,7 @@ namespace BugTrackerDemo.Models
         public int? ProjectId { get; set; }
         public string ProjectName { get; set; }
 
-        public List<ProjectListItem> UserProjectList;
+        public Dictionary<int, string> UserProjectList;
 
-        public class ProjectListItem
-        {
-            public int id { get; set; }
-            public string name { get; set; }
-        }
     }
 }

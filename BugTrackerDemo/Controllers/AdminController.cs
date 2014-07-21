@@ -37,7 +37,7 @@ namespace BugTrackerDemo.Controllers
             return View(returnList);
         }
 
-        public ActionResult ManageUserProjects(int? id)
+        public ActionResult UserEdit(int? id)
         {
             if (id == null)
             {
@@ -52,8 +52,83 @@ namespace BugTrackerDemo.Controllers
             var userProjectsList = db.UserProjectRoles.Where(m => m.UserId == id).ToList();
             var projectList = db.Projects.ToList();
 
+            var viewmodel = new UserViewModel();
+            viewmodel.Id = user.Id;
+            viewmodel.Email = user.Email;
+            viewmodel.FirstName = user.FirstName;
+            viewmodel.LastName = user.LastName;
 
-            return View();
+            foreach (var item in projectList)
+            {
+                var toAdd = new ProjectItem();
+                toAdd.ProjectId = item.Id;
+                toAdd.ProjectName = item.Name;
+                toAdd.IsManager = userProjectsList.Where(m => m.ProjectId == item.Id && m.Role.Role1 == "Manager").ToList().Count > 0;
+                toAdd.IsDeveloper = userProjectsList.Where(m => m.ProjectId == item.Id && m.Role.Role1 == "Developer").ToList().Count > 0;
+                toAdd.IsSubmitter = userProjectsList.Where(m => m.ProjectId == item.Id && m.Role.Role1 == "Submitter").ToList().Count > 0;
+                viewmodel.ProjectItems.Add(toAdd);
+            }
+
+            return View(viewmodel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UserEdit(UserViewModel newData, List<ProjectItem> ProjectItems)
+        {
+            newData.ProjectItems = ProjectItems;
+            if (ModelState.IsValid)
+            {
+                var user = db.UserModels.Where(m => m.Id == newData.Id).ToList().FirstOrDefault();
+                if (user == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                else
+                {
+                    user.FirstName = newData.FirstName;
+                    user.LastName = newData.LastName;
+                    db.UserModels.Attach(user);
+                    var entry = db.Entry(user);
+                    entry.Property(m => m.FirstName).IsModified = true;
+                    entry.Property(m => m.LastName).IsModified = true;
+
+                    db.UserProjectRoles.RemoveRange(db.UserProjectRoles.Where(m => m.UserId == user.Id));
+                    foreach (var item in newData.ProjectItems)
+                    {
+
+                        if (item.IsManager)
+                            db.UserProjectRoles.Add(new UserProjectRole
+                            {
+                                UserId = user.Id,
+                                ProjectId = item.ProjectId,
+                                RoleId = db.Roles.Where(m => m.Role1 == "Manager").First().Id
+                            });
+
+                        if (item.IsDeveloper)
+                            db.UserProjectRoles.Add(new UserProjectRole
+                            {
+                                UserId = user.Id,
+                                ProjectId = item.ProjectId,
+                                RoleId = db.Roles.Where(m => m.Role1 == "Developer").First().Id
+                            });
+
+                        if (item.IsSubmitter)
+                            db.UserProjectRoles.Add(new UserProjectRole
+                            {
+                                UserId = user.Id,
+                                ProjectId = item.ProjectId,
+                                RoleId = db.Roles.Where(m => m.Role1 == "Submitter").First().Id
+                            });
+                    }
+                } // Foreach
+
+                db.SaveChanges();
+
+                return RedirectToAction("UserList");
+            }
+
+            return View(newData);
         }
     }
 }
