@@ -1,4 +1,4 @@
-﻿@using BugTrackerDemo.Models
+﻿
 <!DOCTYPE html>
 
 <!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
@@ -30,40 +30,7 @@
 
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
 
-                    @if (ViewBag.isLoggedIn)
-                    {
-                        PageDataModel page = ViewBag.page;
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project: @page.ProjectName <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                @foreach (var item in page.UserProjectList)
-                                {
-                                    <li>@Html.ActionLink((string)item.Value, "ChangeProject", "Project", new { id = item.Key }, null)</li>
-                                }
-                            </ul>
-                        </li>
 
-                        if (page.UserProjectList.Count > 0)
-                        {
-                            <li>@Html.ActionLink("View All Tickets", "Index", "Ticket")</li>
-
-                            if (page.IsSubmitter)
-                            {
-                                <li>@Html.ActionLink("Submit New Ticket", "Create", "Ticket")</li>
-                            }
-
-                            if (page.IsDeveloper)
-                            {
-                                <li>@Html.ActionLink("View Assigned Tickets", "Index", "Ticket", new { filter = "Assigned" }, null)</li>
-                            }
-
-                            if (page.IsManager)
-                            {
-                                <li>@Html.ActionLink("View Open Tickets", "Index", "Ticket", new { filter = "Open" }, null)</li>
-                                <li>@Html.ActionLink("View Resolved Tickets", "Index", "Ticket", new { filter = "Resolved" }, null)</li>
-                            }
-                        }
-                    }
 
                     @*
                         <li>@Html.ActionLink("About", "About", "Home")</li>
