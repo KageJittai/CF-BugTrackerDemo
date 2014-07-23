@@ -2,20 +2,21 @@
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
-    @Html.AntiForgeryToken()
-
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            @Html.ActionLink("Hello " + (((BugTrackerDemo.Models.PageDataModel)ViewData["page"]).UserDisplayName) + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })
-        </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-    </ul>
+        @Html.AntiForgeryToken()
+        <ul class="loginbar pull-right">
+            <li>@Html.ActionLink("Manage Account", "Manage", "Account",
+                                 routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+            <li class="topbar-devider"></li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">Logoff</a></li>
+        </ul>
     }
 }
 else
 {
-    <ul class="nav navbar-nav navbar-right">
+    <ul class="loginbar pull-right">
         <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        <li class="topbar-devider"></li>
+        <li>@Html.ActionLink("Login", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
 }
+

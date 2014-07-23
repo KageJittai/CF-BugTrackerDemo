@@ -1,0 +1,93 @@
+﻿@using BugTrackerDemo.Models
+<!DOCTYPE html>
+
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+ <!--<![endif]-->
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/css")
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @**Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })*@
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+
+                    @if (ViewBag.isLoggedIn)
+                    {
+                        PageDataModel page = ViewBag.page;
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project: @page.ProjectName <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                @foreach (var item in page.UserProjectList)
+                                {
+                                    <li>@Html.ActionLink((string)item.Value, "ChangeProject", "Project", new { id = item.Key }, null)</li>
+                                }
+                            </ul>
+                        </li>
+
+                        if (page.UserProjectList.Count > 0)
+                        {
+                            <li>@Html.ActionLink("View All Tickets", "Index", "Ticket")</li>
+
+                            if (page.IsSubmitter)
+                            {
+                                <li>@Html.ActionLink("Submit New Ticket", "Create", "Ticket")</li>
+                            }
+
+                            if (page.IsDeveloper)
+                            {
+                                <li>@Html.ActionLink("View Assigned Tickets", "Index", "Ticket", new { filter = "Assigned" }, null)</li>
+                            }
+
+                            if (page.IsManager)
+                            {
+                                <li>@Html.ActionLink("View Open Tickets", "Index", "Ticket", new { filter = "Open" }, null)</li>
+                                <li>@Html.ActionLink("View Resolved Tickets", "Index", "Ticket", new { filter = "Resolved" }, null)</li>
+                            }
+                        }
+                    }
+
+                    @*
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/script")
+    @*RenderSection("scripts", required: false)*@
+    <script>
+        jQuery(document).ready(function() {
+            App.init();
+        });
+    </script>
+
+</body>
+</html>
