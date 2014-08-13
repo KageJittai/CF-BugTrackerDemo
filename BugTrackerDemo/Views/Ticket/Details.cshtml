@@ -57,7 +57,7 @@
                     <div class="col-md-4">@file.Uploader</div>
                     <div class="col-md-2">@file.Uploaded.DateTime.ToString("MM-dd-yyyy")</div>
                     <div class="col-md-2">
-                        @Html.ActionLink(file.FileName, "Download", "Ticket", new { id = file.FileHash }, new { target = "_blank" })
+                        @Html.ActionLink(file.FileName, "Download", "Attachment", new { id = file.FileHash }, new { target = "_blank" })
                     </div>
                     </div>
                     <br />
@@ -65,7 +65,7 @@
                     
                     <br />
                 <div class="row" style="padding-left: 1em; margin-bottom: 2em">
-                    @using (Html.BeginForm("Upload", "Ticket", new { id = Model.Id },
+                    @using (Html.BeginForm("Upload", "Attachment", new { id = Model.Id },
                                        FormMethod.Post, new { enctype = "multipart/form-data" }))
                     {
                         <div class="col-md-2 ">
