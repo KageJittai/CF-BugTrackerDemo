@@ -16,7 +16,7 @@ namespace BugTrackerDemo.Controllers
     {
         // GET: Project
         [AdminRequired]
-        public ActionResult Index()
+        public ActionResult List()
         {
             return View(db.Projects.ToList());
         }
@@ -40,7 +40,7 @@ namespace BugTrackerDemo.Controllers
             {
                 db.Projects.Add(project);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
             }
 
             return View(project);
@@ -74,7 +74,7 @@ namespace BugTrackerDemo.Controllers
             {
                 db.Entry(project).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
             }
             return View(project);
         }
@@ -104,7 +104,7 @@ namespace BugTrackerDemo.Controllers
             Project project = db.Projects.Find(id);
             db.Projects.Remove(project);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("List");
         }
 
         public ActionResult ChangeProject(int? id, string returnUrl)
@@ -117,7 +117,7 @@ namespace BugTrackerDemo.Controllers
             if (numberOfRoles > 0)
             {
                 Session["Project"] = id;
-                return RedirectToLocal("/Ticket/Index");
+                return RedirectToLocal("/Ticket/List");
             }
             else
             {

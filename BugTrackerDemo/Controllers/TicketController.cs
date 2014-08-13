@@ -43,8 +43,8 @@ namespace BugTrackerDemo.Controllers
         }
         
         
-        // GET: Ticket
-        public ActionResult Index(string filter)
+        // GET: Ticket/List
+        public ActionResult List(string filter)
         {
             if (CurrentUser.ProjectId == null)
             {
@@ -193,7 +193,7 @@ namespace BugTrackerDemo.Controllers
             {
                 db.Tickets.Add(ticket);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
             }
             else
             {
@@ -232,7 +232,7 @@ namespace BugTrackerDemo.Controllers
             Ticket ticket = db.Tickets.Find(id);
             db.Tickets.Remove(ticket);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("List");
         }
     }
 }
