@@ -459,6 +459,22 @@ namespace BugTrackerDemo.Controllers
         //    return View(model);
         //}
 
+        ////
+        //// GET: /Account/ExternalLoginFailure
+        //[AllowAnonymous]
+        //public ActionResult ExternalLoginFailure()
+        //{
+        //    return View();
+        //}
+
+        //[ChildActionOnly]
+        //public ActionResult RemoveAccountList()
+        //{
+        //    var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
+        //    ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
+        //    return (ActionResult)PartialView("_RemoveAccountPartial", linkedAccounts);
+        //}
+
         #endregion
 
         // POST: /Account/LogOff
@@ -471,21 +487,7 @@ namespace BugTrackerDemo.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        //
-        // GET: /Account/ExternalLoginFailure
-        [AllowAnonymous]
-        public ActionResult ExternalLoginFailure()
-        {
-            return View();
-        }
 
-        [ChildActionOnly]
-        public ActionResult RemoveAccountList()
-        {
-            var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
-            ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
-            return (ActionResult)PartialView("_RemoveAccountPartial", linkedAccounts);
-        }
 
         #region Helpers
         protected override void Dispose(bool disposing)
