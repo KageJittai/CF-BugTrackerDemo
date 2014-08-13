@@ -120,7 +120,7 @@ namespace BugTrackerDemo.Controllers
 
                 db.SaveChanges();
 
-                return RedirectToAction("UserList");
+                return RedirectToAction("List");
             }
 
             return View(newData);

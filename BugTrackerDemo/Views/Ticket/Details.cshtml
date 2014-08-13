@@ -109,7 +109,7 @@
     <div class="row">
         <div class="col-md-9 shadow-wrapper margin-bottom-60">
             <div class="tag-box-v1 box-shadow shadow-effect-2" style="margin: 0em 3em">
-                @using (Html.BeginForm("SubmitComment", "Ticket", new { id = Model.Id }))
+                @using (Html.BeginForm("Create", "Comment", new { id = Model.Id }))
                 {
                     <p>
                         @Html.TextArea("Comment", "", 5, 15, new { style = "width: 100%; resize: none;" })<br />
