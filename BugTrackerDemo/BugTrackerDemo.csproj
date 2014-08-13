@@ -165,7 +165,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="Common\UserData.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ProjectController.cs" />
     <Compile Include="Controllers\TicketController.cs" />
     <Compile Include="Models\AdminModels.cs" />
@@ -1380,7 +1380,7 @@
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Admin\UserList.cshtml" />
+    <Content Include="Views\User\List.cshtml" />
     <Content Include="Views\Project\Create.cshtml" />
     <Content Include="Views\Project\Delete.cshtml" />
     <Content Include="Views\Project\Edit.cshtml" />
@@ -1389,7 +1389,7 @@
     <Content Include="Views\Ticket\Delete.cshtml" />
     <Content Include="Views\Ticket\Details.cshtml" />
     <Content Include="Views\Ticket\Index.cshtml" />
-    <Content Include="Views\Admin\UserEdit.cshtml" />
+    <Content Include="Views\User\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

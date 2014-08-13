@@ -18,9 +18,9 @@ using BugTrackerDemo.Common;
 namespace BugTrackerDemo.Controllers
 {
     [AdminRequired]
-    public class AdminController : BaseController
+    public class UserController : BaseController
     {
-        public ActionResult UserList()
+        public ActionResult List()
         {
             List<UserModel> myUserList = db.UserModels.ToList();
 
@@ -39,7 +39,7 @@ namespace BugTrackerDemo.Controllers
             return View(returnList);
         }
 
-        public ActionResult UserEdit(int? id)
+        public ActionResult Edit(int? id)
         {
             if (id == null)
             {
@@ -75,7 +75,7 @@ namespace BugTrackerDemo.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UserEdit(UserViewModel newData, List<ProjectItem> ProjectItems)
+        public ActionResult Edit(UserViewModel newData, List<ProjectItem> ProjectItems)
         {
             newData.ProjectItems = ProjectItems;
             if (ModelState.IsValid)
