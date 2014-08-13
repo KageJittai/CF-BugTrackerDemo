@@ -6,12 +6,11 @@ using System.Web.Mvc;
 
 namespace BugTrackerDemo.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         public ActionResult Index()
         {
             ViewBag.message = "Blah";
-
 
             return View();
         }

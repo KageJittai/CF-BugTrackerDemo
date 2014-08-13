@@ -1,6 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
-using BugTrackerDemo.App_Start;
+using BugTrackerDemo.Common;
 
 namespace BugTrackerDemo
 {

@@ -2,6 +2,23 @@
     ViewBag.Title = "About";
 }
 <h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
 
-<p>Use this area to provide additional information.</p>
+<hr />
+
+@helper faq(string question, string anwser)
+{
+<div class="row">
+    <div class="col-md-offset-1 col-md-3">
+        <label>@question</label>
+    </div>
+    <div class="col-md-6 col-md-offset-0">
+        @anwser
+    </div>
+</div>
+<br />
+}
+
+@faq("How was BugSquasher created?", "BugSquasher was developed in Visual Studios 2013 for Web.  It uses SQL Server, C# and ASP.NET MVC")
+@faq("Why was BugSquasher created?", "It was mainly an educational exercise, and my first experience with Microsoft's Web Technologies ")
+@faq("What did I learn while creating BugSquasher?","I learned many things, this is the first application I've developed using the ASP.NET MVC Framework. As so it was a major learning experience. I learned far too many things to list on this page.")
+

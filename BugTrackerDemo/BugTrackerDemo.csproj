@@ -164,24 +164,14 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
+    <Compile Include="Common\UserData.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\ProjectController.cs" />
     <Compile Include="Controllers\TicketController.cs" />
     <Compile Include="Models\AdminModels.cs" />
-    <Compile Include="Models\BugTrackerModels.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BugTrackerModels.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\BugTrackerModels.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BugTrackerModels.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\PageViewModels.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="App_Start\UserInfoAttribute.cs" />
+    <Compile Include="Common\AuthorizationFilters.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -194,38 +184,53 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\Project.cs">
-      <DependentUpon>BugTrackerModels.tt</DependentUpon>
+    <Compile Include="Models\Model1.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Role.cs">
-      <DependentUpon>BugTrackerModels.tt</DependentUpon>
+    <Compile Include="Models\Model1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Project.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\RoleModels.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Ticket.cs">
-      <DependentUpon>BugTrackerModels.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TicketAttachment.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TicketComment.cs">
-      <DependentUpon>BugTrackerModels.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\TicketDetailViewModel.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\TicketPriority.cs">
-      <DependentUpon>BugTrackerModels.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TicketStatus.cs">
-      <DependentUpon>BugTrackerModels.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TicketType.cs">
-      <DependentUpon>BugTrackerModels.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserModel.cs">
-      <DependentUpon>BugTrackerModels.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserProjectRole.cs">
-      <DependentUpon>BugTrackerModels.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\uploads\_doNotDelete.txt" />
     <Content Include="assets\css\app.css" />
     <Content Include="assets\css\custom.css" />
     <Content Include="assets\css\pages\blog.css" />
@@ -705,6 +710,24 @@
     <Content Include="assets\plugins\counter\jquery.counterup.min.js" />
     <Content Include="assets\plugins\counter\waypoints.js" />
     <Content Include="assets\plugins\counter\waypoints.min.js" />
+    <Content Include="assets\plugins\datatables\css\jquery.dataTables.css" />
+    <Content Include="assets\plugins\datatables\css\jquery.dataTables.min.css" />
+    <Content Include="assets\plugins\datatables\css\jquery.dataTables_themeroller.css" />
+    <Content Include="assets\plugins\datatables\images\back_disabled.png" />
+    <Content Include="assets\plugins\datatables\images\back_enabled.png" />
+    <Content Include="assets\plugins\datatables\images\back_enabled_hover.png" />
+    <Content Include="assets\plugins\datatables\images\favicon.ico" />
+    <Content Include="assets\plugins\datatables\images\forward_disabled.png" />
+    <Content Include="assets\plugins\datatables\images\forward_enabled.png" />
+    <Content Include="assets\plugins\datatables\images\forward_enabled_hover.png" />
+    <Content Include="assets\plugins\datatables\images\sort_asc.png" />
+    <Content Include="assets\plugins\datatables\images\sort_asc_disabled.png" />
+    <Content Include="assets\plugins\datatables\images\sort_both.png" />
+    <Content Include="assets\plugins\datatables\images\sort_desc.png" />
+    <Content Include="assets\plugins\datatables\images\sort_desc_disabled.png" />
+    <Content Include="assets\plugins\datatables\js\jquery.dataTables.js" />
+    <Content Include="assets\plugins\datatables\js\jquery.dataTables.min.js" />
+    <Content Include="assets\plugins\datatables\js\jquery.js" />
     <Content Include="assets\plugins\fancybox\CHANGELOG.txt" />
     <Content Include="assets\plugins\fancybox\demo\1_b.jpg" />
     <Content Include="assets\plugins\fancybox\demo\1_s.jpg" />
@@ -793,6 +816,7 @@
     <Content Include="assets\plugins\image-hover\js\modernizr.js" />
     <Content Include="assets\plugins\image-hover\js\touch.js" />
     <Content Include="assets\plugins\jquery-1.10.2.min.js" />
+    <Content Include="assets\plugins\jquery-2.1.1.min.js" />
     <Content Include="assets\plugins\jquery-migrate-1.2.1.min.js" />
     <Content Include="assets\plugins\jquery.mixitup.min.js" />
     <Content Include="assets\plugins\jquery.parallax.js" />
@@ -1328,16 +1352,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Models\BugTrackerModels.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BugTrackerModels.Context.cs</LastGenOutput>
-      <DependentUpon>BugTrackerModels.edmx</DependentUpon>
-    </Content>
-    <Content Include="Models\BugTrackerModels.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BugTrackerModels.cs</LastGenOutput>
-      <DependentUpon>BugTrackerModels.edmx</DependentUpon>
-    </Content>
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1348,7 +1362,6 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout2.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -1375,13 +1388,10 @@
     <Content Include="Views\Ticket\Create.cshtml" />
     <Content Include="Views\Ticket\Delete.cshtml" />
     <Content Include="Views\Ticket\Details.cshtml" />
-    <Content Include="Views\Ticket\Edit.cshtml" />
     <Content Include="Views\Ticket\Index.cshtml" />
     <Content Include="Views\Admin\UserEdit.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="assets\css\plugins\brand-buttons\.travis.yml" />
@@ -1548,8 +1558,20 @@
     <Content Include="assets\plugins\vector-map\converter\simplifier.py" />
     <Content Include="assets\plugins\vector-map\jvectormap.jquery.json" />
     <Content Include="assets\plugins\vector-map\README.md" />
+    <Content Include="assets\plugins\datatables\images\Sorting icons.psd" />
+    <Content Include="Models\Model1.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Model1.Context.cs</LastGenOutput>
+      <DependentUpon>BugTrackerModels.edmx</DependentUpon>
+    </Content>
+    <Content Include="Models\Model1.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Model1.cs</LastGenOutput>
+      <DependentUpon>BugTrackerModels.edmx</DependentUpon>
+    </Content>
     <None Include="Project_Readme.html" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <None Include="Properties\PublishProfiles\cmiller-bugsquasher.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

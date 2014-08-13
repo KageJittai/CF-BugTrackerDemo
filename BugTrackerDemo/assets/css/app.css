@@ -15,6 +15,10 @@
    border-radius: 0 !important;
 }
 
+.padded-p p {
+    padding: 1em 1em 2em 2em;
+}
+
 body { 
    color: #333; 
    font-size: 13px;
@@ -1409,7 +1413,7 @@ i.icon-color-aqua,
 i.icon-color-brown,
 i.icon-color-dark-blue,
 i.icon-color-light-grey,
-i.icon-color-light-green, {
+i.icon-color-light-green {
   background: none;
 }
 

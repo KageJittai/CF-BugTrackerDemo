@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using BugTrackerDemo.Models;
+using BugTrackerDemo.Common;
 
 namespace BugTrackerDemo.Controllers
 {
@@ -14,18 +15,16 @@ namespace BugTrackerDemo.Controllers
     public class ProjectController : BaseController
     {
         // GET: Project
+        [AdminRequired]
         public ActionResult Index()
         {
             return View(db.Projects.ToList());
         }
 
         // GET: Project/Create
-        public ActionResult Create(int? id)
+        [AdminRequired]
+        public ActionResult Create()
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             return View();
         }
 
@@ -34,6 +33,7 @@ namespace BugTrackerDemo.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AdminRequired]
         public ActionResult Create([Bind(Include = "Id,Name")] Project project)
         {
             if (ModelState.IsValid)
@@ -47,6 +47,7 @@ namespace BugTrackerDemo.Controllers
         }
 
         // GET: Project/Edit/5
+        [AdminRequired]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -66,6 +67,7 @@ namespace BugTrackerDemo.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AdminRequired]
         public ActionResult Edit([Bind(Include = "Id,Name")] Project project)
         {
             if (ModelState.IsValid)
@@ -78,6 +80,7 @@ namespace BugTrackerDemo.Controllers
         }
 
         // GET: Project/Delete/5
+        [AdminRequired]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -95,6 +98,7 @@ namespace BugTrackerDemo.Controllers
         // POST: Project/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [AdminRequired]
         public ActionResult DeleteConfirmed(int id)
         {
             Project project = db.Projects.Find(id);
@@ -105,16 +109,15 @@ namespace BugTrackerDemo.Controllers
 
         public ActionResult ChangeProject(int? id, string returnUrl)
         {
-            if (id == null || Session["User"] == null)
+            if (id == null || !IsLoggedIn)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            int userId = (int)Session["User"];
-            int numberOfRoles = db.UserProjectRoles.Where(m => m.UserId == userId && m.ProjectId == id).ToList().Count;
+            int numberOfRoles = db.UserProjectRoles.Where(m => m.UserId == CurrentUser.UserId && m.ProjectId == id).ToList().Count;
             if (numberOfRoles > 0)
             {
                 Session["Project"] = id;
-                return RedirectToLocal(returnUrl);
+                return RedirectToLocal("/Ticket/Index");
             }
             else
             {
@@ -132,15 +135,6 @@ namespace BugTrackerDemo.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

@@ -12,84 +12,20 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.Title)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Description)
+            @Html.DisplayFor(model => model.Title)
         </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Creation)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Creation)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Updated)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Updated)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TicketPriority.Priority)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TicketPriority.Priority)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TicketStatus.Status)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TicketStatus.Status)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TicketType.Type)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TicketType.Type)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Owner.FirstName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Owner.FirstName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Assignee.FirstName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Assignee.FirstName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Project.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Project.Name)
-        </dd>
-
     </dl>
 
     @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
+            <input type="submit" value="Delete" class="btn btn-default" />
+            <hr />
             @Html.ActionLink("Back to List", "Index")
         </div>
     }

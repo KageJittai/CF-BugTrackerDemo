@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity;
 
 namespace BugTrackerDemo.Models
 {
@@ -28,7 +29,5 @@ namespace BugTrackerDemo.Models
         {
             return new ApplicationDbContext();
         }
-
-        public System.Data.Entity.DbSet<BugTrackerDemo.Models.UserViewModel> UserViewModels { get; set; }
     }
 }

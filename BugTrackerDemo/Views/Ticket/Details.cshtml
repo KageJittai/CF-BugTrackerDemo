@@ -1,90 +1,129 @@
-﻿@model BugTrackerDemo.Models.Ticket
+﻿@model BugTrackerDemo.Models.TicketDetailViewModel
 
 @{
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+@helper item(string title, string body)
+{
+    <div class="row headline">
+        <div class="col col-md-2"><label>@title</label></div>
+        <div class="col col-md-4">@body</div>
+    </div>
+}
 
-<div>
-    <h4>Ticket</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
+<div class="padded-p">
+    <div class="row">
+        <div class="shadow-wrapper margin-bottom-60">
+            <div class="tag-box-v1 box-shadow shadow-effect-2" style="margin: 0em 3em">
 
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
+                @item("Title", @Model.Title)
+                @item("Submitted By", @Model.OwnerName)
+                @if (ViewBag.page.IsManager == true)
+                {
+                    using (Html.BeginForm("Assign", "Ticket", new { id = Model.Id }, FormMethod.Post, new { Id = "Form1" }))
+                    {
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CreationTime)
-        </dt>
+                        <div class="row headline">
+                            <div class="form-group">
+                                <div class="col col-md-2"><label>Assign To</label></div>
+                                <div class="col col-md-4">@Html.DropDownList("assignList", null, htmlAttributes: new { @class = "form-control" })</div>
+                                <div class="col col-md-4">
+                                    <input type="submit" value="Assign" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    @item("Assigned To", @Model.AssigneeName)
+                }
+                @item("Created", @Model.CreationDate)
+                @item("Updated", @Model.UpdateDate)
 
-        <dd>
-            @Html.DisplayFor(model => model.CreationTime)
-        </dd>
+                <p>@Model.Description</p>
+            </div>
+        </div>
+    </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.UpdatedTime)
-        </dt>
+    <div class="row">
+        <div class="col-md-9 shadow-wrapper margin-bottom-60">
+            <div class="tag-box-v1 box-shadow shadow-effect-2" style="margin: 0em 3em">
 
-        <dd>
-            @Html.DisplayFor(model => model.UpdatedTime)
-        </dd>
+                @foreach (var file in Model.Attachments)
+                {
+                    <div class="row" style="padding-left: 1em">
+                    <div class="col-md-4">@file.Uploader</div>
+                    <div class="col-md-2">@file.Uploaded.DateTime.ToString("MM-dd-yyyy")</div>
+                    <div class="col-md-2">
+                        @Html.ActionLink(file.FileName, "Download", "Ticket", new { id = file.FileHash }, new { target = "_blank" })
+                    </div>
+                    </div>
+                    <br />
+                }
+                    
+                    <br />
+                <div class="row" style="padding-left: 1em; margin-bottom: 2em">
+                    @using (Html.BeginForm("Upload", "Ticket", new { id = Model.Id },
+                                       FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        <div class="col-md-2 ">
+                            <label class="control-label">Upload File</label>
+                        </div>
+                        <div class="col-md-5">@Html.TextBox("file", new { }, new { type = "file" })</div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.TicketPriority.Priority)
-        </dt>
+                        <div class="col-md-2">
+                            <input type="submit" value="Upload" class="btn btn-default" />
+                        </div>
+                    }
+                    
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.TicketPriority.Priority)
-        </dd>
+    <div class="row">
+        <div class="col-md-9 shadow-wrapper margin-bottom-60">
+            <div class="tag-box-v1 box-shadow shadow-effect-2" style="margin: 0em 3em">
+                @{ bool first = true; }
+                @foreach (var comment in @Model.Comments)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        <hr style="border-bottom: solid" />
+                    }
+                    @item("Author", comment.PosterName)
+                    @item("Date", comment.PostTime.ToString())
+                    <p>@comment.Message</p>
+                }
+            </div>
+        </div>
+    </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.TicketStatus.Status)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.TicketStatus.Status)
-        </dd>
+    <div class="row">
+        <div class="col-md-9 shadow-wrapper margin-bottom-60">
+            <div class="tag-box-v1 box-shadow shadow-effect-2" style="margin: 0em 3em">
+                @using (Html.BeginForm("SubmitComment", "Ticket", new { id = Model.Id }))
+                {
+                    <p>
+                        @Html.TextArea("Comment", "", 5, 15, new { style = "width: 100%; resize: none;" })<br />
+                        <input type="submit" value="New Comment" class="btn btn-default" />
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.TicketType.Type)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TicketType.Type)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Owner.FirstName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Owner.FirstName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Assignee.FirstName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Assignee.FirstName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Project.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Project.Name)
-        </dd>
-
-    </dl>
 </div>
+
+
+
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>

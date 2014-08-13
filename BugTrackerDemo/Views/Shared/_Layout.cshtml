@@ -1,4 +1,4 @@
-﻿@using BugTrackerDemo.Models
+﻿@using BugTrackerDemo.Common
 
 <!DOCTYPE html>
 <!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
@@ -8,29 +8,31 @@
     <title>@ViewBag.Title - BugSqusher</title>
 
     <!-- Meta -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico" />
 
     <!-- CSS Global Compulsory -->
-    <link rel="stylesheet" href="~/assets/plugins/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="~/assets/css/style.css">
+    <link rel="stylesheet" href="~/assets/plugins/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/assets/css/style.css" />
 
     <!-- CSS Implementing Plugins -->
-    <link rel="stylesheet" href="~/assets/plugins/line-icons/line-icons.css">
-    <link rel="stylesheet" href="~/assets/plugins/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="~/assets/plugins/flexslider/flexslider.css">
-    <link rel="stylesheet" href="~/assets/plugins/parallax-slider/css/parallax-slider.css">
+    <link rel="stylesheet" href="~/assets/plugins/line-icons/line-icons.css" />
+    <link rel="stylesheet" href="~/assets/plugins/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/flexslider/flexslider.css" />
+    <link rel="stylesheet" href="~/assets/plugins/parallax-slider/css/parallax-slider.css" />
 
     <!-- CSS Theme -->
-    <link rel="stylesheet" href="~/assets/css/themes/default.css" id="style_color">
+    <link rel="stylesheet" href="~/assets/css/themes/default.css" id="style_color" />
 
     <!-- CSS Customization -->
-    <link rel="stylesheet" href="~/assets/css/custom.css">
+    <link rel="stylesheet" href="~/assets/css/custom.css" />
+
+    <link rel="stylesheet" href="~/assets/plugins/datatables/css/jquery.dataTables.min.css" />
 </head>
 
 <body class="boxed-layout container">
@@ -80,8 +82,11 @@
 
                             @if (ViewBag.isLoggedIn)
                             {
-                                PageDataModel page = ViewBag.page;
+                                UserData page = ViewBag.page;
                                 
+                                
+                                if (page.IsAdmin)
+                                { 
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin</a>
                                     <ul class="dropdown-menu">
@@ -89,6 +94,7 @@
                                             <li>@Html.ActionLink("Manage Users", "UserList", "Admin")</li>
                                     </ul>
                                 </li>
+                                }
                                 
                                 
                                 <li class="dropdown">
@@ -162,7 +168,7 @@
         <!--=== End Copyright ===-->
     </div><!--/wrapper-->
     <!-- JS Global Compulsory -->
-    <script type="text/javascript" src="~/assets/plugins/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="~/assets/plugins/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <!-- JS Implementing Plugins -->
@@ -181,10 +187,14 @@
         });
     </script>
 
+    <script type="text/javascript" src="~/assets/plugins/datatables/js/jquery.dataTables.min.js"></script>
+
     <script type="text/javascript" src="~/assets/js/plugins/validation.js"></script>
     <!--[if lt IE 9]>
         <script src="~/assets/plugins/respond.js"></script>
     <![endif]-->
+
+    @RenderSection("scripts", false)
 
 </body>
 </html>	

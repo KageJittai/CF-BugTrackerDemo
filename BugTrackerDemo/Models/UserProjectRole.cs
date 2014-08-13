@@ -19,7 +19,7 @@ namespace BugTrackerDemo.Models
         public int RoleId { get; set; }
     
         public virtual Project Project { get; set; }
-        public virtual Role Role { get; set; }
+        public virtual RoleModels Role { get; set; }
         public virtual UserModel User { get; set; }
     }
 }

@@ -13,9 +13,11 @@ using Owin;
 using BugTrackerDemo.Models;
 using System.Web.Security;
 using System.Net;
+using BugTrackerDemo.Common;
 
 namespace BugTrackerDemo.Controllers
 {
+    [AdminRequired]
     public class AdminController : BaseController
     {
         public ActionResult UserList()
@@ -43,13 +45,12 @@ namespace BugTrackerDemo.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var user = db.UserModels.Where(m=>m.Id == id).ToList().FirstOrDefault();
-            if (user == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            var user = db.UserModels
+                         .Include("UserProjectRoles")
+                         .Include("UserProjectRoles.Role")
+                         .Where(m=>m.Id == id).ToList().First();
 
-            var userProjectsList = db.UserProjectRoles.Where(m => m.UserId == id).ToList();
+            var userProjectsList = user.UserProjectRoles.ToList();
             var projectList = db.Projects.ToList();
 
             var viewmodel = new UserViewModel();
@@ -79,13 +80,8 @@ namespace BugTrackerDemo.Controllers
             newData.ProjectItems = ProjectItems;
             if (ModelState.IsValid)
             {
-                var user = db.UserModels.Where(m => m.Id == newData.Id).ToList().FirstOrDefault();
-                if (user == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                else
-                {
+                var user = db.UserModels.Where(m => m.Id == newData.Id).ToList().First();
+
                     user.FirstName = newData.FirstName;
                     user.LastName = newData.LastName;
                     db.UserModels.Attach(user);
@@ -102,7 +98,7 @@ namespace BugTrackerDemo.Controllers
                             {
                                 UserId = user.Id,
                                 ProjectId = item.ProjectId,
-                                RoleId = db.Roles.Where(m => m.Role1 == "Manager").First().Id
+                                RoleId = db.RoleModels.Where(m => m.Role1 == "Manager").First().Id
                             });
 
                         if (item.IsDeveloper)
@@ -110,7 +106,7 @@ namespace BugTrackerDemo.Controllers
                             {
                                 UserId = user.Id,
                                 ProjectId = item.ProjectId,
-                                RoleId = db.Roles.Where(m => m.Role1 == "Developer").First().Id
+                                RoleId = db.RoleModels.Where(m => m.Role1 == "Developer").First().Id
                             });
 
                         if (item.IsSubmitter)
@@ -118,10 +114,9 @@ namespace BugTrackerDemo.Controllers
                             {
                                 UserId = user.Id,
                                 ProjectId = item.ProjectId,
-                                RoleId = db.Roles.Where(m => m.Role1 == "Submitter").First().Id
+                                RoleId = db.RoleModels.Where(m => m.Role1 == "Submitter").First().Id
                             });
                     }
-                } // Foreach
 
                 db.SaveChanges();
 

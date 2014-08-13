@@ -35,6 +35,17 @@
           <Property Name="Updated" Type="datetimeoffset" Precision="0" Nullable="false" />
           <Property Name="Title" Type="ntext" Nullable="false" />
         </EntityType>
+        <EntityType Name="TicketAttachment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UploaderId" Type="int" Nullable="false" />
+          <Property Name="TicketId" Type="int" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="FileHash" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="UploadDate" Type="datetimeoffset" Precision="7" Nullable="false" />
+        </EntityType>
         <EntityType Name="TicketComment">
           <Key>
             <PropertyRef Name="Id" />
@@ -42,7 +53,8 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TicketId" Type="int" Nullable="false" />
           <Property Name="PosterId" Type="int" Nullable="false" />
-          <Property Name="Message" Type="text" />
+          <Property Name="Message" Type="text" Nullable="false" />
+          <Property Name="PostTime" Type="datetimeoffset" Precision="7" Nullable="false" />
         </EntityType>
         <EntityType Name="TicketPriority">
           <Key>
@@ -73,6 +85,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Admin" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="UserProjectRole">
           <Key>
@@ -156,6 +169,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_TicketAttachment_Ticket">
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="1" />
+          <End Role="TicketAttachment" Type="Self.TicketAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ticket">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TicketAttachment">
+              <PropertyRef Name="TicketId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TicketAttachment_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="TicketAttachment" Type="Self.TicketAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TicketAttachment">
+              <PropertyRef Name="UploaderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TicketComment_Ticket">
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="1" />
           <End Role="TicketComment" Type="Self.TicketComment" Multiplicity="*" />
@@ -220,6 +257,7 @@
           <EntitySet Name="Project" EntityType="Self.Project" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Ticket" EntityType="Self.Ticket" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TicketAttachment" EntityType="Self.TicketAttachment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketComment" EntityType="Self.TicketComment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketPriority" EntityType="Self.TicketPriority" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketStatus" EntityType="Self.TicketStatus" Schema="dbo" store:Type="Tables" />
@@ -249,6 +287,14 @@
           <AssociationSet Name="FK_Ticket_User1" Association="Self.FK_Ticket_User1">
             <End Role="User" EntitySet="User" />
             <End Role="Ticket" EntitySet="Ticket" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TicketAttachment_Ticket" Association="Self.FK_TicketAttachment_Ticket">
+            <End Role="Ticket" EntitySet="Ticket" />
+            <End Role="TicketAttachment" EntitySet="TicketAttachment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TicketAttachment_User" Association="Self.FK_TicketAttachment_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="TicketAttachment" EntitySet="TicketAttachment" />
           </AssociationSet>
           <AssociationSet Name="FK_TicketComment_Ticket" Association="Self.FK_TicketComment_Ticket">
             <End Role="Ticket" EntitySet="Ticket" />
@@ -297,6 +343,7 @@
           <Property Name="CreationTime" Type="DateTimeOffset" Nullable="false" Precision="0" />
           <Property Name="UpdatedTime" Type="DateTimeOffset" Nullable="false" Precision="0" />
           <Property Name="Title" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="TicketAttachments" Relationship="BugTrackerModel.FK_TicketAttachment_Ticket" FromRole="Ticket" ToRole="TicketAttachment" />
         </EntityType>
         <EntityType Name="TicketComment">
           <Key>
@@ -305,9 +352,10 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TicketId" Type="Int32" Nullable="false" />
           <Property Name="PosterId" Type="Int32" Nullable="false" />
-          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Ticket" Relationship="Self.FK_TicketComment_Ticket" FromRole="TicketComment" ToRole="Ticket" />
           <NavigationProperty Name="Poster" Relationship="Self.FK_TicketComment_User" FromRole="TicketComment" ToRole="User" />
+          <Property Name="PostTime" Type="DateTimeOffset" Nullable="false" Precision="7" />
         </EntityType>
         <EntityType Name="TicketPriority">
           <Key>
@@ -345,6 +393,8 @@
           <NavigationProperty Name="TicketComments" Relationship="Self.FK_TicketComment_User" FromRole="User" ToRole="TicketComment" />
           <NavigationProperty Name="UserProjectRoles" Relationship="BugTrackerModel.FK_UserProjectRole_User" FromRole="User" ToRole="UserProjectRole" />
           <Property Name="Email" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Admin" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="TicketAttachments" Relationship="BugTrackerModel.FK_TicketAttachment_User" FromRole="UserModel" ToRole="TicketAttachment" />
         </EntityType>
         <Association Name="FK_Ticket_TicketPriority">
           <End Role="TicketPriority" Type="Self.TicketPriority" Multiplicity="1" />
@@ -470,19 +520,28 @@
             <End Role="Project" EntitySet="Projects" />
             <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
-          <EntitySet Name="Roles" EntityType="BugTrackerModel.Role" />
+          <EntitySet Name="RoleModels" EntityType="BugTrackerModel.RoleModels" />
           <EntitySet Name="UserProjectRoles" EntityType="BugTrackerModel.UserProjectRole" />
           <AssociationSet Name="FK_UserProjectRole_Project" Association="BugTrackerModel.FK_UserProjectRole_Project">
             <End Role="Project" EntitySet="Projects" />
             <End Role="UserProjectRole" EntitySet="UserProjectRoles" />
           </AssociationSet>
           <AssociationSet Name="FK_UserProjectRole_Role" Association="BugTrackerModel.FK_UserProjectRole_Role">
-            <End Role="Role" EntitySet="Roles" />
+            <End Role="Role" EntitySet="RoleModels" />
             <End Role="UserProjectRole" EntitySet="UserProjectRoles" />
           </AssociationSet>
           <AssociationSet Name="FK_UserProjectRole_User" Association="BugTrackerModel.FK_UserProjectRole_User">
             <End Role="User" EntitySet="UserModels" />
             <End Role="UserProjectRole" EntitySet="UserProjectRoles" />
+          </AssociationSet>
+          <EntitySet Name="TicketAttachments" EntityType="BugTrackerModel.TicketAttachment" />
+          <AssociationSet Name="FK_TicketAttachment_Ticket" Association="BugTrackerModel.FK_TicketAttachment_Ticket">
+            <End Role="Ticket" EntitySet="Tickets" />
+            <End Role="TicketAttachment" EntitySet="TicketAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TicketAttachment_User" Association="BugTrackerModel.FK_TicketAttachment_User">
+            <End Role="UserModel" EntitySet="UserModels" />
+            <End Role="TicketAttachment" EntitySet="TicketAttachments" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Project">
@@ -506,7 +565,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Role">
+        <EntityType Name="RoleModels">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -540,7 +599,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_UserProjectRole_Role">
-          <End Type="BugTrackerModel.Role" Role="Role" Multiplicity="1" />
+          <End Type="BugTrackerModel.RoleModels" Role="Role" Multiplicity="1" />
           <End Type="BugTrackerModel.UserProjectRole" Role="UserProjectRole" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Role">
@@ -560,6 +619,43 @@
             </Principal>
             <Dependent Role="UserProjectRole">
               <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="TicketAttachment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UploaderId" Type="Int32" Nullable="false" />
+          <Property Name="TicketId" Type="Int32" Nullable="false" />
+          <Property Name="FileName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="FileHash" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UploadDate" Type="DateTimeOffset" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Ticket" Relationship="BugTrackerModel.FK_TicketAttachment_Ticket" FromRole="TicketAttachment" ToRole="Ticket" />
+          <NavigationProperty Name="User" Relationship="BugTrackerModel.FK_TicketAttachment_User" FromRole="TicketAttachment" ToRole="UserModel" />
+        </EntityType>
+        <Association Name="FK_TicketAttachment_Ticket">
+          <End Type="BugTrackerModel.Ticket" Role="Ticket" Multiplicity="1" />
+          <End Type="BugTrackerModel.TicketAttachment" Role="TicketAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ticket">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TicketAttachment">
+              <PropertyRef Name="TicketId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TicketAttachment_User">
+          <End Type="BugTrackerModel.UserModel" Role="UserModel" Multiplicity="1" />
+          <End Type="BugTrackerModel.TicketAttachment" Role="TicketAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserModel">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TicketAttachment">
+              <PropertyRef Name="UploaderId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -589,6 +685,7 @@
           <EntitySetMapping Name="TicketComments">
             <EntityTypeMapping TypeName="BugTrackerModel.TicketComment">
               <MappingFragment StoreEntitySet="TicketComment">
+                <ScalarProperty Name="PostTime" ColumnName="PostTime" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="TicketId" ColumnName="TicketId" />
                 <ScalarProperty Name="PosterId" ColumnName="PosterId" />
@@ -623,6 +720,7 @@
           <EntitySetMapping Name="UserModels">
             <EntityTypeMapping TypeName="BugTrackerModel.UserModel">
               <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="Admin" ColumnName="Admin" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
@@ -638,8 +736,8 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Roles">
-            <EntityTypeMapping TypeName="BugTrackerModel.Role">
+          <EntitySetMapping Name="RoleModels">
+            <EntityTypeMapping TypeName="BugTrackerModel.RoleModels">
               <MappingFragment StoreEntitySet="Role">
                 <ScalarProperty Name="Role1" ColumnName="Role" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -652,6 +750,18 @@
                 <ScalarProperty Name="RoleId" ColumnName="RoleId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TicketAttachments">
+            <EntityTypeMapping TypeName="BugTrackerModel.TicketAttachment">
+              <MappingFragment StoreEntitySet="TicketAttachment">
+                <ScalarProperty Name="UploadDate" ColumnName="UploadDate" />
+                <ScalarProperty Name="FileHash" ColumnName="FileHash" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="TicketId" ColumnName="TicketId" />
+                <ScalarProperty Name="UploaderId" ColumnName="UploaderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

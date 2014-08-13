@@ -21,11 +21,14 @@
         <EntityTypeShape EntityType="BugTrackerModel.Project" Width="1.5" PointX="1" PointY="2.75" />
         <AssociationConnector Association="BugTrackerModel.FK_Ticket_Project" />
         <AssociationConnector Association="BugTrackerModel.ProjectUser" />
-        <EntityTypeShape EntityType="BugTrackerModel.Role" Width="1.5" PointX="6" PointY="6.125" />
+        <EntityTypeShape EntityType="BugTrackerModel.RoleModels" Width="1.5" PointX="8.25" PointY="5.75" />
         <EntityTypeShape EntityType="BugTrackerModel.UserProjectRole" Width="1.5" PointX="8.25" PointY="2.875" />
         <AssociationConnector Association="BugTrackerModel.FK_UserProjectRole_Project" />
         <AssociationConnector Association="BugTrackerModel.FK_UserProjectRole_Role" />
         <AssociationConnector Association="BugTrackerModel.FK_UserProjectRole_User" />
+        <EntityTypeShape EntityType="BugTrackerModel.TicketAttachment" Width="1.5" PointX="11.25" PointY="3.25" />
+        <AssociationConnector Association="BugTrackerModel.FK_TicketAttachment_Ticket" />
+        <AssociationConnector Association="BugTrackerModel.FK_TicketAttachment_User" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

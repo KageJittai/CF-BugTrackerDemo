@@ -17,6 +17,7 @@ namespace BugTrackerDemo.Models
         public Ticket()
         {
             this.TicketComments = new HashSet<TicketComment>();
+            this.TicketAttachments = new HashSet<TicketAttachment>();
         }
     
         public int Id { get; set; }
@@ -38,5 +39,6 @@ namespace BugTrackerDemo.Models
         public virtual UserModel Assignee { get; set; }
         public virtual ICollection<TicketComment> TicketComments { get; set; }
         public virtual Project Project { get; set; }
+        public virtual ICollection<TicketAttachment> TicketAttachments { get; set; }
     }
 }

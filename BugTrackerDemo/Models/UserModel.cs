@@ -20,16 +20,19 @@ namespace BugTrackerDemo.Models
             this.AssignedTickets = new HashSet<Ticket>();
             this.TicketComments = new HashSet<TicketComment>();
             this.UserProjectRoles = new HashSet<UserProjectRole>();
+            this.TicketAttachments = new HashSet<TicketAttachment>();
         }
     
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+        public bool Admin { get; set; }
     
         public virtual ICollection<Ticket> SubmittedTickets { get; set; }
         public virtual ICollection<Ticket> AssignedTickets { get; set; }
         public virtual ICollection<TicketComment> TicketComments { get; set; }
         public virtual ICollection<UserProjectRole> UserProjectRoles { get; set; }
+        public virtual ICollection<TicketAttachment> TicketAttachments { get; set; }
     }
 }

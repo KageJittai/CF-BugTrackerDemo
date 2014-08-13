@@ -7,21 +7,50 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using BugTrackerDemo.Models;
+using BugTrackerDemo.Common;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace BugTrackerDemo.Controllers
 {
-    public class TicketController : Controller
-    {
-        private BugTrackerEntities db = new BugTrackerEntities();
 
-        // GET: Ticket
-        public ActionResult Index(string filter)
+    public class TicketController : BaseController
+    {
+
+        [HttpPost]
+        public ActionResult SubmitComment(int? id, string Comment)
         {
-            if (Session["Project"] == null)
+            if (id == null || CurrentUser.ProjectId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            int id = (int)Session["Project"];
+
+            // Make sure this ticket is inside the current project
+            var ticket = db.Tickets.Where(u => u.Id == id && u.ProjectId == CurrentUser.ProjectId).First();
+
+            var newComment = new TicketComment
+            {
+                PosterId = (int)CurrentUser.UserId,
+                PostTime = DateTimeOffset.Now,
+                Message = Comment,
+                TicketId = (int)id
+            };
+
+            db.TicketComments.Add(newComment);
+            db.SaveChanges();
+
+            return RedirectToAction("Details", "Ticket", new { id = id });
+        }
+        
+        
+        // GET: Ticket
+        public ActionResult Index(string filter)
+        {
+            if (CurrentUser.ProjectId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            int id = (int)CurrentUser.ProjectId;
             var tickets = db.Tickets.Include(t => t.TicketPriority).Include(t => t.TicketStatus).Include(t => t.TicketType).Include(t => t.Owner).Include(t => t.Assignee).Include(t => t.Project);
             switch(filter)
             {
@@ -29,8 +58,7 @@ namespace BugTrackerDemo.Controllers
                     tickets = tickets.Where(t => t.TicketStatus.Status == "Open");
                     break;
                 case "Assigned":
-                    int userid = (int)Session["User"];
-                    tickets = tickets.Where(t => t.TicketStatus.Status == "Assigned" && t.AssigneeId == userid);
+                    tickets = tickets.Where(t => t.TicketStatus.Status == "Assigned" && t.AssigneeId == CurrentUser.UserId);
                     break;
                 case "Resolved":
                     tickets = tickets.Where(t => t.TicketStatus.Status == "Resolved");
@@ -39,7 +67,6 @@ namespace BugTrackerDemo.Controllers
                     break;
             }
 
-
             tickets = tickets.Where(t => t.ProjectId == id).OrderByDescending(t => t.UpdatedTime);
             return View(tickets.ToList());
         }
@@ -47,19 +74,139 @@ namespace BugTrackerDemo.Controllers
         // GET: Ticket/Details/5
         public ActionResult Details(int? id)
         {
+            if (id == null || CurrentUser.ProjectId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            // We search for both id and project id to ensure users can't access tickets
+            // On projects they are not part of.
+            Ticket ticket = db.Tickets.Include("Owner").Include("Assignee")
+                            .Include("TicketComments").Include("TicketPriority").Include("TicketType")
+                            .Include("TicketStatus").Include("TicketComments.Poster")
+                            .Where(m => m.Id == id).First();
+
+            // If the user is not in the current project
+            if (CurrentUser.ProjectId != ticket.ProjectId)
+            {
+                // Check to see if the user is a member of this project
+                if (CurrentUser.UserProjectList[ticket.ProjectId] != null)
+                {
+                    // Change their current project to the project this ticket is in
+                    CurrentUser.ProjectId = ticket.ProjectId;
+                    Session["Project"] = ticket.ProjectId;
+                }
+                else
+                {
+                    // Forbid the user from viewing this ticket
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
+            }
+
+            if (CurrentUser.IsManager)
+            {
+                var list = db.UserProjectRoles.Include("User")
+                             .Where(m => m.ProjectId == CurrentUser.ProjectId &&
+                                         m.Role.Role1 == "Developer").ToList();
+
+                List<SelectListItem> UserList = new List<SelectListItem>();
+
+                UserList.Add(new SelectListItem { Value = "-1", Text = "Nobody" });
+                                
+                foreach (var user in list)
+                {
+                    string name = user.User.FirstName + " " + user.User.LastName + " (" + user.User.Email + ")";
+                    var toAdd = new SelectListItem { Value = user.UserId.ToString(), Text = name };
+
+                    if (user.UserId == ticket.AssigneeId)
+                        toAdd.Selected = true;
+
+                    UserList.Add(toAdd);
+                }
+
+                ViewBag.assignList = UserList;
+            }
+
+            var model = new TicketDetailViewModel(ticket);
+
+            return View(model);
+        }
+        
+        [HttpPost]
+        [ManagerRequired]
+        public ActionResult Assign(int? id, string assignList)
+        {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
+            var ticket = db.Tickets.Where(m => m.Id == (int)id && m.ProjectId == CurrentUser.ProjectId).First();
+
+            try
             {
-                return HttpNotFound();
+                int newId = Convert.ToInt32(assignList);
+                if (newId == -1)
+                    ticket.AssigneeId = null;
+                else
+                {
+                    ticket.AssigneeId = newId;
+                    ticket.StatusId = db.TicketStatusList.Where(m => m.Status == "Assigned").First().Id;
+                }
             }
-            return View(ticket);
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            db.Entry(ticket).State = EntityState.Modified;
+            db.SaveChanges();
+            
+            return RedirectToAction("Details", "Ticket", new { id = id });
+        }
+        
+        // POST: Ticket/Upload
+        [HttpPost]
+        public ActionResult Upload(int? id, HttpPostedFileBase file)
+        {
+            if (id == null || file == null || CurrentUser.ProjectId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Ticket ticket = db.Tickets.Where(m => m.Id == id && m.ProjectId == CurrentUser.ProjectId).First();
+
+            if (file.ContentLength > 0)
+            {
+                TicketAttachment attachment = new TicketAttachment();
+                attachment.UploadDate = DateTimeOffset.UtcNow;
+                attachment.TicketId = ticket.Id;
+                attachment.UploaderId = (int)CurrentUser.UserId;
+                attachment.FileName = Path.GetFileName(file.FileName);
+ 
+                var md5 = MD5.Create();
+                attachment.FileHash = string.Join("", md5.ComputeHash(file.InputStream).Select(x => x.ToString("x2")));
+
+                var path = Path.Combine(Server.MapPath("~/App_Data/uploads"), attachment.FileHash);
+
+                file.SaveAs(path);
+
+                db.Entry(attachment).State = EntityState.Added;
+                db.SaveChanges();
+            }
+            return RedirectToAction("Details", "Ticket", new { id = (int)id });
         }
 
+        // GET: Ticket/Download/id
+        public ActionResult Download(string id)
+        {
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            TicketAttachment attachment = db.TicketAttachments.Where(m => m.FileHash == id).First();
+
+            return File("~/App_Data/uploads/" + attachment.FileHash, "application/force-download", attachment.FileName);
+        }
+        
         // GET: Ticket/Create
+        [SubmitterRequired]
         public ActionResult Create()
         {
             ViewBag.PriorityId = new SelectList(db.TicketPriorities, "Id", "Priority");
@@ -72,12 +219,13 @@ namespace BugTrackerDemo.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SubmitterRequired]
         public ActionResult Create([Bind(Include = "Id,ProjectId,OwnerId,TypeId,PriorityId,StatusId,AssigneeId,Description,CreationTime,UpdatedTime,Title")] Ticket ticket)
         {
             ticket.CreationTime = DateTimeOffset.UtcNow;
             ticket.UpdatedTime = DateTimeOffset.UtcNow;
-            ticket.OwnerId = (int)Session["User"];
-            ticket.ProjectId = (int)Session["Project"];
+            ticket.OwnerId = (int)CurrentUser.UserId;
+            ticket.ProjectId = (int)CurrentUser.ProjectId;
             ticket.StatusId = db.TicketStatusList.Where(m => m.Status == "Open").ToList().First().Id;
 
             ModelState.Clear();
@@ -104,51 +252,8 @@ namespace BugTrackerDemo.Controllers
 
         }
 
-        // GET: Ticket/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-
-            ViewBag.PriorityId = new SelectList(db.TicketPriorities, "Id", "Priority", ticket.PriorityId);
-            ViewBag.StatusId = new SelectList(db.TicketStatusList, "Id", "Status", ticket.StatusId);
-            ViewBag.TypeId = new SelectList(db.TicketTypes, "Id", "Type", ticket.TypeId);
-            ViewBag.OwnerId = new SelectList(db.UserModels, "Id", "FirstName", ticket.OwnerId);
-            ViewBag.AssigneeId = new SelectList(db.UserModels, "Id", "FirstName", ticket.AssigneeId);
-            ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Name", ticket.ProjectId);
-            return View(ticket);
-        }
-
-        // POST: Ticket/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,ProjectId,OwnerId,TypeId,PriorityId,StatusId,AssigneeId,Description,Creation,Updated,Title")] Ticket ticket)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(ticket).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            ViewBag.PriorityId = new SelectList(db.TicketPriorities, "Id", "Priority", ticket.PriorityId);
-            ViewBag.StatusId = new SelectList(db.TicketStatusList, "Id", "Status", ticket.StatusId);
-            ViewBag.TypeId = new SelectList(db.TicketTypes, "Id", "Type", ticket.TypeId);
-            ViewBag.OwnerId = new SelectList(db.UserModels, "Id", "FirstName", ticket.OwnerId);
-            ViewBag.AssigneeId = new SelectList(db.UserModels, "Id", "FirstName", ticket.AssigneeId);
-            ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Name", ticket.ProjectId);
-            return View(ticket);
-        }
-
         // GET: Ticket/Delete/5
+        [ManagerRequired]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -156,31 +261,20 @@ namespace BugTrackerDemo.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
+
             return View(ticket);
         }
 
         // POST: Ticket/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [ManagerRequired]
         public ActionResult DeleteConfirmed(int id)
         {
             Ticket ticket = db.Tickets.Find(id);
             db.Tickets.Remove(ticket);
             db.SaveChanges();
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

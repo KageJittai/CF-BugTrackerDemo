@@ -18,6 +18,7 @@ namespace BugTrackerDemo.Models
         public int TicketId { get; set; }
         public int PosterId { get; set; }
         public string Message { get; set; }
+        public System.DateTimeOffset PostTime { get; set; }
     
         public virtual Ticket Ticket { get; set; }
         public virtual UserModel Poster { get; set; }

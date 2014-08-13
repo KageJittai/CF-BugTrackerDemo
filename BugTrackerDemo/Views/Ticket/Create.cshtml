@@ -6,21 +6,19 @@
     ViewBag.Title = "Create";
 }
 
-<h2>Create</h2>
+<h2>Submit a New Ticket</h2>
 
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Ticket</h4>
-        <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
         @Html.HiddenFor(model => model.ProjectId)
         @Html.HiddenFor(model => model.AssigneeId)
         @Html.HiddenFor(model => model.StatusId)
-        @Html.HiddenFor(model=>model.OwnerId)
+        @Html.HiddenFor(model => model.OwnerId)
         @Html.HiddenFor(model => model.CreationTime)
         @Html.HiddenFor(model => model.UpdatedTime)
         @*
