@@ -14,6 +14,7 @@ using BugTrackerDemo.Models;
 using System.Web.Security;
 using System.Net;
 using BugTrackerDemo.Common;
+using System.Data.Entity;
 
 namespace BugTrackerDemo.Controllers
 {
@@ -26,13 +27,14 @@ namespace BugTrackerDemo.Controllers
 
             List<UserViewModel> returnList = new List<UserViewModel>();
 
-            foreach(UserModel item in myUserList)
+            foreach (UserModel item in myUserList)
             {
                 UserViewModel thisItem = new UserViewModel();
                 thisItem.Id = item.Id;
                 thisItem.Email = item.Email;
                 thisItem.FirstName = item.FirstName;
                 thisItem.LastName = item.LastName;
+                thisItem.IsAdmin = item.Admin;
                 returnList.Add(thisItem);
             }
 
@@ -48,7 +50,7 @@ namespace BugTrackerDemo.Controllers
             var user = db.UserModels
                          .Include("UserProjectRoles")
                          .Include("UserProjectRoles.Role")
-                         .Where(m=>m.Id == id).ToList().First();
+                         .Where(m => m.Id == id).ToList().First();
 
             var userProjectsList = user.UserProjectRoles.ToList();
             var projectList = db.Projects.ToList();
@@ -58,6 +60,7 @@ namespace BugTrackerDemo.Controllers
             viewmodel.Email = user.Email;
             viewmodel.FirstName = user.FirstName;
             viewmodel.LastName = user.LastName;
+            viewmodel.IsAdmin = user.Admin;
 
             foreach (var item in projectList)
             {
@@ -80,43 +83,40 @@ namespace BugTrackerDemo.Controllers
             newData.ProjectItems = ProjectItems;
             if (ModelState.IsValid)
             {
-                var user = db.UserModels.Where(m => m.Id == newData.Id).ToList().First();
+                UserModel user = db.UserModels.Where(m => m.Id == newData.Id).First();
 
-                    user.FirstName = newData.FirstName;
-                    user.LastName = newData.LastName;
-                    db.UserModels.Attach(user);
-                    var entry = db.Entry(user);
-                    entry.Property(m => m.FirstName).IsModified = true;
-                    entry.Property(m => m.LastName).IsModified = true;
+                user.FirstName = newData.FirstName;
+                user.LastName = newData.LastName;
+                user.Admin = newData.IsAdmin;
 
-                    db.UserProjectRoles.RemoveRange(db.UserProjectRoles.Where(m => m.UserId == user.Id));
-                    foreach (var item in newData.ProjectItems)
-                    {
+                db.UserProjectRoles.RemoveRange(db.UserProjectRoles.Where(m => m.UserId == user.Id));
+                foreach (var item in newData.ProjectItems)
+                {
 
-                        if (item.IsManager)
-                            db.UserProjectRoles.Add(new UserProjectRole
-                            {
-                                UserId = user.Id,
-                                ProjectId = item.ProjectId,
-                                RoleId = db.RoleModels.Where(m => m.Role1 == "Manager").First().Id
-                            });
+                    if (item.IsManager)
+                        db.UserProjectRoles.Add(new UserProjectRole
+                        {
+                            UserId = user.Id,
+                            ProjectId = item.ProjectId,
+                            RoleId = db.RoleModels.Where(m => m.Role1 == "Manager").First().Id
+                        });
 
-                        if (item.IsDeveloper)
-                            db.UserProjectRoles.Add(new UserProjectRole
-                            {
-                                UserId = user.Id,
-                                ProjectId = item.ProjectId,
-                                RoleId = db.RoleModels.Where(m => m.Role1 == "Developer").First().Id
-                            });
+                    if (item.IsDeveloper)
+                        db.UserProjectRoles.Add(new UserProjectRole
+                        {
+                            UserId = user.Id,
+                            ProjectId = item.ProjectId,
+                            RoleId = db.RoleModels.Where(m => m.Role1 == "Developer").First().Id
+                        });
 
-                        if (item.IsSubmitter)
-                            db.UserProjectRoles.Add(new UserProjectRole
-                            {
-                                UserId = user.Id,
-                                ProjectId = item.ProjectId,
-                                RoleId = db.RoleModels.Where(m => m.Role1 == "Submitter").First().Id
-                            });
-                    }
+                    if (item.IsSubmitter)
+                        db.UserProjectRoles.Add(new UserProjectRole
+                        {
+                            UserId = user.Id,
+                            ProjectId = item.ProjectId,
+                            RoleId = db.RoleModels.Where(m => m.Role1 == "Submitter").First().Id
+                        });
+                }
 
                 db.SaveChanges();
 

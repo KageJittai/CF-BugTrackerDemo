@@ -1,22 +1,24 @@
-﻿@model IEnumerable<BugTrackerDemo.Models.Ticket>
+﻿@model IPagedList<BugTrackerDemo.Models.Ticket>
+
+@using PagedList.Mvc;
+@using PagedList;
 
 @using BugTrackerDemo.Common
 
 @{
     ViewBag.Title = "Ticket List";
-    UserData page = ViewBag.page;
+    UserData user = ViewBag.page;
 }
+
+<link href="~/assets/css/plugins/PagedList.css" rel="stylesheet" type="text/css" />
 
 <h2>Ticket List</h2>
 
-
-
-@if(page.IsSubmitter)
+@if(user.IsSubmitter)
 {
 <p>
     @Html.ActionLink("Submit New Ticket", "Create")
 </p>
-    
 }
 
 <hr />
@@ -31,10 +33,7 @@
             Status
         </th>
         <th>
-            Type
-        </th>
-        <th>
-            Priority
+            Serverity
         </th>
         <th>
             Summary
@@ -54,10 +53,7 @@
             @item.TicketStatus.Status
         </td>
         <td>
-            @item.TicketType.Type
-        </td>
-        <td>
-            @item.TicketPriority.Priority
+            @item.TicketSeverity.Type
         </td>
         <td class="col-md-6">
             @item.Title
@@ -73,16 +69,22 @@
     </tr>
 }
     </tbody>
-
 </table>
-
-@section scripts
+@if (Model.PageCount > 1)
 {
-    <script type="text/javascript">
-        $(document).ready(function()
-        {
-            $('#TicketTable').DataTable();
-        });
-    </script>
+    <br />
+    <div style="text-align: center">
+        @Html.PagedListPager(Model, page => Url.Action("List", new { page }))
+    </div>
 }
-
+@*
+    @section scripts
+    {
+        <script type="text/javascript">
+            $(document).ready(function()
+            {
+                $('#TicketTable').DataTable();
+            });
+        </script>
+    }
+*@

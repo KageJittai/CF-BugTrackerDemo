@@ -23,22 +23,20 @@ namespace BugTrackerDemo.Models
         public int Id { get; set; }
         public int ProjectId { get; set; }
         public int OwnerId { get; set; }
-        public int TypeId { get; set; }
-        public int PriorityId { get; set; }
         public int StatusId { get; set; }
         public Nullable<int> AssigneeId { get; set; }
         public string Description { get; set; }
         public System.DateTimeOffset CreationTime { get; set; }
         public System.DateTimeOffset UpdatedTime { get; set; }
         public string Title { get; set; }
+        public int SeverityId { get; set; }
     
-        public virtual TicketPriority TicketPriority { get; set; }
         public virtual TicketStatus TicketStatus { get; set; }
-        public virtual TicketType TicketType { get; set; }
         public virtual UserModel Owner { get; set; }
         public virtual UserModel Assignee { get; set; }
         public virtual ICollection<TicketComment> TicketComments { get; set; }
         public virtual Project Project { get; set; }
         public virtual ICollection<TicketAttachment> TicketAttachments { get; set; }
+        public virtual TicketSeverity TicketSeverity { get; set; }
     }
 }

@@ -10,12 +10,18 @@ namespace BugTrackerDemo.Models
     {
         [Required]
         public int Id { get; set; }
+
         public string Email { get; set; }
+
         public string FirstName { get; set; }
+
         public string LastName { get; set; }
+
+        public bool IsAdmin { get; set; }
 
         public List<ProjectItem> ProjectItems = new List<ProjectItem>();
     }
+
     public class ProjectItem
     {
         public string ProjectName { get; set; }
@@ -25,6 +31,5 @@ namespace BugTrackerDemo.Models
         public bool IsManager { get; set; }
         public bool IsDeveloper { get; set; }
         public bool IsSubmitter { get; set; }
-
     }
 }

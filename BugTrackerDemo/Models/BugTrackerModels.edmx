@@ -26,8 +26,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ProjectId" Type="int" Nullable="false" />
           <Property Name="OwnerId" Type="int" Nullable="false" />
-          <Property Name="TypeId" Type="int" Nullable="false" />
-          <Property Name="PriorityId" Type="int" Nullable="false" />
+          <Property Name="SeverityId" Type="int" Nullable="false" />
           <Property Name="StatusId" Type="int" Nullable="false" />
           <Property Name="AssigneeId" Type="int" />
           <Property Name="Description" Type="ntext" Nullable="false" />
@@ -56,12 +55,12 @@
           <Property Name="Message" Type="text" Nullable="false" />
           <Property Name="PostTime" Type="datetimeoffset" Precision="7" Nullable="false" />
         </EntityType>
-        <EntityType Name="TicketPriority">
+        <EntityType Name="TicketSeverity">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Priority" Type="nvarchar" MaxLength="50" />
+          <Property Name="Type" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="TicketStatus">
           <Key>
@@ -69,13 +68,6 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" />
-        </EntityType>
-        <EntityType Name="TicketType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Type" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -109,15 +101,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Ticket_TicketPriority">
-          <End Role="TicketPriority" Type="Self.TicketPriority" Multiplicity="1" />
+        <Association Name="FK_Ticket_TicketSeverity">
+          <End Role="TicketSeverity" Type="Self.TicketSeverity" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="TicketPriority">
+            <Principal Role="TicketSeverity">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Ticket">
-              <PropertyRef Name="PriorityId" />
+              <PropertyRef Name="SeverityId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -130,18 +122,6 @@
             </Principal>
             <Dependent Role="Ticket">
               <PropertyRef Name="StatusId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Ticket_TicketType">
-          <End Role="TicketType" Type="Self.TicketType" Multiplicity="1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="TicketType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Ticket">
-              <PropertyRef Name="TypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -259,25 +239,20 @@
           <EntitySet Name="Ticket" EntityType="Self.Ticket" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketAttachment" EntityType="Self.TicketAttachment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketComment" EntityType="Self.TicketComment" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="TicketPriority" EntityType="Self.TicketPriority" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TicketSeverity" EntityType="Self.TicketSeverity" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketStatus" EntityType="Self.TicketStatus" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="TicketType" EntityType="Self.TicketType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserProjectRole" EntityType="Self.UserProjectRole" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Ticket_Project" Association="Self.FK_Ticket_Project">
             <End Role="Project" EntitySet="Project" />
             <End Role="Ticket" EntitySet="Ticket" />
           </AssociationSet>
-          <AssociationSet Name="FK_Ticket_TicketPriority" Association="Self.FK_Ticket_TicketPriority">
-            <End Role="TicketPriority" EntitySet="TicketPriority" />
+          <AssociationSet Name="FK_Ticket_TicketSeverity" Association="Self.FK_Ticket_TicketSeverity">
+            <End Role="TicketSeverity" EntitySet="TicketSeverity" />
             <End Role="Ticket" EntitySet="Ticket" />
           </AssociationSet>
           <AssociationSet Name="FK_Ticket_TicketStatus" Association="Self.FK_Ticket_TicketStatus">
             <End Role="TicketStatus" EntitySet="TicketStatus" />
-            <End Role="Ticket" EntitySet="Ticket" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ticket_TicketType" Association="Self.FK_Ticket_TicketType">
-            <End Role="TicketType" EntitySet="TicketType" />
             <End Role="Ticket" EntitySet="Ticket" />
           </AssociationSet>
           <AssociationSet Name="FK_Ticket_User" Association="Self.FK_Ticket_User">
@@ -328,14 +303,10 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ProjectId" Type="Int32" Nullable="false" />
           <Property Name="OwnerId" Type="Int32" Nullable="false" />
-          <Property Name="TypeId" Type="Int32" Nullable="false" />
-          <Property Name="PriorityId" Type="Int32" Nullable="false" />
           <Property Name="StatusId" Type="Int32" Nullable="false" />
           <Property Name="AssigneeId" Type="Int32" />
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="TicketPriority" Relationship="Self.FK_Ticket_TicketPriority" FromRole="Ticket" ToRole="TicketPriority" />
           <NavigationProperty Name="TicketStatus" Relationship="Self.FK_Ticket_TicketStatus" FromRole="Ticket" ToRole="TicketStatus" />
-          <NavigationProperty Name="TicketType" Relationship="Self.FK_Ticket_TicketType" FromRole="Ticket" ToRole="TicketType" />
           <NavigationProperty Name="Owner" Relationship="Self.FK_Ticket_User" FromRole="Ticket" ToRole="User" />
           <NavigationProperty Name="Assignee" Relationship="BugTrackerModel.FK_Ticket_User1" FromRole="Ticket" ToRole="User" />
           <NavigationProperty Name="TicketComments" Relationship="Self.FK_TicketComment_Ticket" FromRole="Ticket" ToRole="TicketComment" />
@@ -344,6 +315,8 @@
           <Property Name="UpdatedTime" Type="DateTimeOffset" Nullable="false" Precision="0" />
           <Property Name="Title" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="TicketAttachments" Relationship="BugTrackerModel.FK_TicketAttachment_Ticket" FromRole="Ticket" ToRole="TicketAttachment" />
+          <Property Name="SeverityId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="TicketSeverity" Relationship="BugTrackerModel.FK_Ticket_TicketSeverity" FromRole="Ticket" ToRole="TicketSeverity" />
         </EntityType>
         <EntityType Name="TicketComment">
           <Key>
@@ -357,14 +330,6 @@
           <NavigationProperty Name="Poster" Relationship="Self.FK_TicketComment_User" FromRole="TicketComment" ToRole="User" />
           <Property Name="PostTime" Type="DateTimeOffset" Nullable="false" Precision="7" />
         </EntityType>
-        <EntityType Name="TicketPriority">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Priority" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_TicketPriority" FromRole="TicketPriority" ToRole="Ticket" />
-        </EntityType>
         <EntityType Name="TicketStatus">
           <Key>
             <PropertyRef Name="Id" />
@@ -372,14 +337,6 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_TicketStatus" FromRole="TicketStatus" ToRole="Ticket" />
-        </EntityType>
-        <EntityType Name="TicketType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_TicketType" FromRole="TicketType" ToRole="Ticket" />
         </EntityType>
         <EntityType Name="UserModel">
           <Key>
@@ -396,18 +353,6 @@
           <Property Name="Admin" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="TicketAttachments" Relationship="BugTrackerModel.FK_TicketAttachment_User" FromRole="UserModel" ToRole="TicketAttachment" />
         </EntityType>
-        <Association Name="FK_Ticket_TicketPriority">
-          <End Role="TicketPriority" Type="Self.TicketPriority" Multiplicity="1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="TicketPriority">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Ticket">
-              <PropertyRef Name="PriorityId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Ticket_TicketStatus">
           <End Role="TicketStatus" Type="BugTrackerModel.TicketStatus" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
@@ -417,18 +362,6 @@
             </Principal>
             <Dependent Role="Ticket">
               <PropertyRef Name="StatusId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Ticket_TicketType">
-          <End Role="TicketType" Type="Self.TicketType" Multiplicity="1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="TicketType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Ticket">
-              <PropertyRef Name="TypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -483,20 +416,10 @@
         <EntityContainer Name="BugTrackerEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Tickets" EntityType="Self.Ticket" />
           <EntitySet Name="TicketComments" EntityType="Self.TicketComment" />
-          <EntitySet Name="TicketPriorities" EntityType="Self.TicketPriority" />
           <EntitySet Name="TicketStatusList" EntityType="BugTrackerModel.TicketStatus" />
-          <EntitySet Name="TicketTypes" EntityType="Self.TicketType" />
           <EntitySet Name="UserModels" EntityType="BugTrackerModel.UserModel" />
-          <AssociationSet Name="FK_Ticket_TicketPriority" Association="Self.FK_Ticket_TicketPriority">
-            <End Role="TicketPriority" EntitySet="TicketPriorities" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
           <AssociationSet Name="FK_Ticket_TicketStatus" Association="Self.FK_Ticket_TicketStatus">
             <End Role="TicketStatus" EntitySet="TicketStatusList" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ticket_TicketType" Association="Self.FK_Ticket_TicketType">
-            <End Role="TicketType" EntitySet="TicketTypes" />
             <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
           <AssociationSet Name="FK_Ticket_User" Association="Self.FK_Ticket_User">
@@ -542,6 +465,11 @@
           <AssociationSet Name="FK_TicketAttachment_User" Association="BugTrackerModel.FK_TicketAttachment_User">
             <End Role="UserModel" EntitySet="UserModels" />
             <End Role="TicketAttachment" EntitySet="TicketAttachments" />
+          </AssociationSet>
+          <EntitySet Name="TicketSeverities" EntityType="BugTrackerModel.TicketSeverity" />
+          <AssociationSet Name="FK_Ticket_TicketSeverity" Association="BugTrackerModel.FK_Ticket_TicketSeverity">
+            <End Role="TicketSeverity" EntitySet="TicketSeverities" />
+            <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Project">
@@ -659,6 +587,26 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="TicketSeverity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Tickets" Relationship="BugTrackerModel.FK_Ticket_TicketSeverity" FromRole="TicketSeverity" ToRole="Ticket" />
+        </EntityType>
+        <Association Name="FK_Ticket_TicketSeverity">
+          <End Type="BugTrackerModel.TicketSeverity" Role="TicketSeverity" Multiplicity="1" />
+          <End Type="BugTrackerModel.Ticket" Role="Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TicketSeverity">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="SeverityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -668,14 +616,13 @@
           <EntitySetMapping Name="Tickets">
             <EntityTypeMapping TypeName="BugTrackerModel.Ticket">
               <MappingFragment StoreEntitySet="Ticket">
+                <ScalarProperty Name="SeverityId" ColumnName="SeverityId" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="UpdatedTime" ColumnName="Updated" />
                 <ScalarProperty Name="CreationTime" ColumnName="Creation" />
                 <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
-                <ScalarProperty Name="TypeId" ColumnName="TypeId" />
-                <ScalarProperty Name="PriorityId" ColumnName="PriorityId" />
                 <ScalarProperty Name="StatusId" ColumnName="StatusId" />
                 <ScalarProperty Name="AssigneeId" ColumnName="AssigneeId" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
@@ -693,27 +640,11 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TicketPriorities">
-            <EntityTypeMapping TypeName="BugTrackerModel.TicketPriority">
-              <MappingFragment StoreEntitySet="TicketPriority">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Priority" ColumnName="Priority" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="TicketStatusList">
             <EntityTypeMapping TypeName="BugTrackerModel.TicketStatus">
               <MappingFragment StoreEntitySet="TicketStatus">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TicketTypes">
-            <EntityTypeMapping TypeName="BugTrackerModel.TicketType">
-              <MappingFragment StoreEntitySet="TicketType">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -761,6 +692,14 @@
                 <ScalarProperty Name="FileName" ColumnName="FileName" />
                 <ScalarProperty Name="TicketId" ColumnName="TicketId" />
                 <ScalarProperty Name="UploaderId" ColumnName="UploaderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TicketSeverities">
+            <EntityTypeMapping TypeName="BugTrackerModel.TicketSeverity">
+              <MappingFragment StoreEntitySet="TicketSeverity">
+                <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

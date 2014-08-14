@@ -41,6 +41,14 @@
             </div>
         </div>
 
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsAdmin, htmlAttributes: new { @class = "control-label col-md-2"})
+            <div class="col-md-10">
+                @Html.CheckBoxFor(model => model.IsAdmin, new { htmlAttributes = new {  @class = "form-control"} })
+                @Html.ValidationMessageFor(model => model.IsAdmin, "", new { @class = "text-danger"})
+            </div>
+        </div>
+
         @for (int i = 0; i < Model.ProjectItems.Count; i++)
         {
             <div class="row form-group">
