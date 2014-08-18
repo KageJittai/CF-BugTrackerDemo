@@ -18,9 +18,12 @@ namespace BugTrackerDemo.Controllers
     public class TicketController : BaseController
     {
         [HttpGet]
-        public ActionResult List(int? page)
+        public ActionResult List(int? page, int? status, int? severity, bool? myTickets)
         {
             page = page ?? 1;
+            status = status ?? -1;
+            severity = severity ?? -1;
+            myTickets = myTickets ?? false;
 
             if (CurrentUser.ProjectId == null)
             {
@@ -29,20 +32,63 @@ namespace BugTrackerDemo.Controllers
             int id = (int)CurrentUser.ProjectId;
             var tickets = db.Tickets.Include(t => t.TicketSeverity).Include(t => t.TicketStatus).Include(t => t.Owner).Include(t => t.Assignee).Include(t => t.Project);
 
-            return View(tickets.Where(t => t.ProjectId == id).OrderByDescending(t => t.UpdatedTime).ToPagedList((int)page, 10));
-        }
-
-        [HttpPost, ActionName("List")]
-        public ActionResult ListFiltered(int? page)
-        {
-            page = page ?? 1;
-            
-            if (CurrentUser.ProjectId == null)
+            if (status != -1)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                tickets = tickets.Where(t => t.StatusId == (int)status);
             }
-            int id = (int)CurrentUser.ProjectId;
-            var tickets = db.Tickets.Include(t => t.TicketSeverity).Include(t => t.TicketStatus).Include(t => t.Owner).Include(t => t.Assignee).Include(t => t.Project);
+            if (severity != -1)
+            {
+                tickets = tickets.Where(t => t.SeverityId == (int)severity);
+            }
+            if ((bool)myTickets)
+            {
+                tickets = tickets.Where(t => t.OwnerId == CurrentUser.UserId || t.AssigneeId == CurrentUser.UserId);
+            }
+
+            ViewBag.statusCurrent = (int)status;
+            ViewBag.severityCurrent = (int)severity;
+            ViewBag.myTicketsCurrent = (bool)myTickets;
+
+
+            List<SelectListItem> severityList = new List<SelectListItem>();
+            List<SelectListItem> statusList = new List<SelectListItem>();
+
+            severityList.Add(new SelectListItem
+             {
+                Value = "-1",
+                Text = "[Any]",
+                Selected = (-1 == severity) ? true : false
+             });
+
+            statusList.Add(new SelectListItem
+             {
+                Value = "-1",
+                Text = "[Any]",
+                Selected = (-1 == status) ? true : false
+             });
+
+            foreach (var item in db.TicketSeverities.ToList())
+            {
+                severityList.Add(new SelectListItem
+                    {
+                        Value = item.Id.ToString(),
+                        Text = item.Type,
+                        Selected = (item.Id == severity) ? true : false
+                    });
+            }
+                
+            foreach (var item in db.TicketStatusList.ToList())
+            {
+                statusList.Add(new SelectListItem
+                    {
+                        Value = item.Id.ToString(),
+                        Text = item.Status,
+                        Selected = (item.Id == status) ? true : false
+                    });
+            }
+
+            ViewBag.severity = severityList;
+            ViewBag.status = statusList;
 
             return View(tickets.Where(t => t.ProjectId == id).OrderByDescending(t => t.UpdatedTime).ToPagedList((int)page, 10));
         }
@@ -100,6 +146,44 @@ namespace BugTrackerDemo.Controllers
                 }
 
                 ViewBag.assignList = UserList;
+                
+                List<SelectListItem> SeverityList = new List<SelectListItem>();
+                var dbSeverityList = db.TicketSeverities.ToList();
+
+                foreach (var severity in dbSeverityList)
+                {
+                    SeverityList.Add(new SelectListItem
+                    {
+                        Value = severity.Id.ToString(),
+                        Text = severity.Type
+                    });
+                }
+
+                ViewBag.severityList = SeverityList;
+            }
+
+            // Both a manager or a person assigned to a ticket can update the ticket's status
+            if (CurrentUser.IsManager || CurrentUser.UserId == ticket.AssigneeId)
+            {
+                List<SelectListItem> StatusList = new List<SelectListItem>();
+                var dbList = db.TicketStatusList.ToList();
+
+                foreach(var status in dbList)
+                {
+                    var toAdd = new SelectListItem
+                    {
+                        Value = status.Id.ToString(),
+                        Text = status.Status
+                    };
+
+                    if (ticket.StatusId == status.Id)
+                        toAdd.Selected = true;
+
+                    StatusList.Add(toAdd);
+                }
+
+                ViewBag.statusList = StatusList;
+
             }
 
             var model = new TicketDetailViewModel(ticket);
@@ -125,7 +209,7 @@ namespace BugTrackerDemo.Controllers
                 else
                 {
                     ticket.AssigneeId = newId;
-                    ticket.StatusId = db.TicketStatusList.Where(m => m.Status == "Assigned").First().Id;
+                    ticket.StatusId = 2; // Ugly hack, but assigns the Status to the "In progress" status.
                 }
             }
             catch
@@ -133,9 +217,36 @@ namespace BugTrackerDemo.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            db.Entry(ticket).State = EntityState.Modified;
-            db.SaveChanges();
+            UpdateTicket(ticket, "Assigned to User");
             
+            return RedirectToAction("Details", "Ticket", new { id = id });
+        }
+
+        [HttpPost]
+        public ActionResult ChangeStatus(int? id, string statusList)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var ticket = db.Tickets.Where(m => m.Id == (int)id && m.ProjectId == CurrentUser.ProjectId).First();
+
+            // Only people assigned to ticket and managers can change the status
+            if (ticket.AssigneeId != CurrentUser.UserId && !CurrentUser.IsManager)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
+            try
+            {
+                ticket.StatusId = Int32.Parse(statusList);
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            UpdateTicket(ticket, "Status Updated");
+
             return RedirectToAction("Details", "Ticket", new { id = id });
         }
        

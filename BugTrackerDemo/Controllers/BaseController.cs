@@ -26,6 +26,12 @@ namespace BugTrackerDemo.Controllers
             ViewBag.page = CurrentUser;
         }
 
+        protected void UpdateTicket(Ticket ticket, string message)
+        {
+            ticket.UpdatedTime = DateTimeOffset.UtcNow;
+            db.SaveChanges();
+        }
+
         public void createUserData(string email)
         {
             IsLoggedIn = true;

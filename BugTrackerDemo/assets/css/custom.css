@@ -1,1 +1,34 @@
 /* Add here all your css styles (customizations) */
+
+.td-label
+{
+    border: 1px solid #808080;
+    padding: 1em 1em 1em 1em;
+    background-color: lightblue;
+    /*height: 3em*/
+}
+
+.td-info
+{
+    border: 1px solid #808080;
+    padding: 1em 1em 1em 1em;
+}
+
+.comment-box
+{
+    /*padding: 15px;*/
+    border: 1px solid;
+    margin-bottom: 1em;
+}
+
+.td-select
+{
+    border: 1px solid #808080;
+    padding: 0em;
+}
+
+.td-select
+{
+    height: 46px;
+    padding: 1em;
+}

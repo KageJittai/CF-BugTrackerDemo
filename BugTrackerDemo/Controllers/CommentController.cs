@@ -30,7 +30,7 @@ namespace BugTrackerDemo.Controllers
             };
 
             db.TicketComments.Add(newComment);
-            db.SaveChanges();
+            UpdateTicket(ticket, "New Comment");
 
             return RedirectToAction("Details", "Ticket", new { id = id });
         }

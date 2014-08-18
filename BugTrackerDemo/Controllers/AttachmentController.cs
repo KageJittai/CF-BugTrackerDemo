@@ -39,7 +39,7 @@ namespace BugTrackerDemo.Controllers
                 file.SaveAs(path);
 
                 db.Entry(attachment).State = EntityState.Added;
-                db.SaveChanges();
+                UpdateTicket(ticket, "File Attached");
             }
 
             return RedirectToAction("Details", "Ticket", new { id = (int)id });

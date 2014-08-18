@@ -20,6 +20,18 @@
 </p>
 }
 
+<div class="row">
+    @using (Html.BeginForm("List", "Ticket", new { }, FormMethod.Get, htmlAttributes: new { id = "search-form" }))
+    {
+        @Html.Hidden("page", Model.PageNumber);
+        @Html.DropDownList("status", null, htmlAttributes: new { @class = "col-md-offset-6 col-md-2 td-select autoupdate" })
+        @Html.DropDownList("severity", null, htmlAttributes: new { @class = "col-md-2 td-select autoupdate" })
+        <div class="col-md-2 td-select">
+            @Html.CheckBox("myTickets", (bool)ViewBag.myTicketsCurrent, htmlAttributes: new { @class = "autoupdate" })
+            <label class="control-label">My Tickets</label>
+        </div>
+    }
+</div>
 <hr />
 
 <table id="TicketTable" class="table">
@@ -43,13 +55,19 @@
     </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model)
+{
     <tr>
         <td>
             @item.UpdatedTime.DateTime.ToString("MM-dd-yyyy")
         </td>
         <td>
             @item.TicketStatus.Status
+            @if (@item.AssigneeId != null)
+            { 
+                <br />
+                @Html.Raw(item.Assignee.FirstName + " " + item.Assignee.LastName + "(" + item.Assignee.Email + ")")
+            }
         </td>
         <td>
             @item.TicketSeverity.Type
@@ -58,12 +76,14 @@
             @item.Title
         </td>
         <td>
-            @Html.ActionLink("Details", "Details", new { id=item.Id })
-            @if (ViewBag.page.IsManager == true)
-            {
-                @Html.Raw(" | ")
-                @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-            }
+            @Html.ActionLink("Details", "Details", new { id = item.Id })
+            @*
+    @if (ViewBag.page.IsManager == true)
+    {
+        @Html.Raw(" | ")
+        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+    }
+            *@
         </td>
     </tr>
 }
@@ -73,17 +93,19 @@
 {
     <br />
     <div style="text-align: center">
-        @Html.PagedListPager(Model, page => Url.Action("List", new { page }))
+        @Html.PagedListPager(Model, page => Url.Action("List", new { page, status = ViewBag.statusCurrent, severity = ViewBag.severityCurrent, myTickets = ViewBag.myTicketsCurrent }))
     </div>
 }
-@*
-    @section scripts
-    {
-        <script type="text/javascript">
-            $(document).ready(function()
-            {
-                $('#TicketTable').DataTable();
+@section scripts {
+    <!--<script type="text/javascript">
+        $(document).ready(function () {
+            $('#TicketTable').DataTable();
+        });
+    </script>-->
+
+    <script type="text/javascript">
+        $(".autoupdate").change(function() {
+                $("#search-form").submit();
             });
-        </script>
-    }
-*@
+    </script>
+}

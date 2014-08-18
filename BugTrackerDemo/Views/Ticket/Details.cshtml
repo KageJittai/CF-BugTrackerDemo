@@ -1,105 +1,111 @@
 ﻿@model BugTrackerDemo.Models.TicketDetailViewModel
 
+@using BugTrackerDemo.Common
+
 @{
     ViewBag.Title = "Details";
+    UserData user = ViewBag.page;
 }
 
-<div class="row">
+<div class="container-fluid">
 
-    <label class="control-label">Title</label>
-    <pre>@Model.Title</pre>
-    
-    <label class="control-label">Submitted By</label>
-    <pre>@Model.OwnerName</pre>
+    <div class="row">
+        <label class="col-md-2 control-label td-label">Summary</label>
+        <div class="col-md-10 td-info">@Model.Title</div>
+    </div>
 
-    @if (ViewBag.page.IsManager == true)
-    {
-        using (Html.BeginForm("Assign", "Ticket", new { id = Model.Id }, FormMethod.Post, new { Id = "Form1" }))
+    <div class="row">
+        <label class="col-md-2 control-label td-label">Submitted By</label>
+        <div class="col-md-5 td-info">@Model.OwnerName</div>
+    </div>
+
+    <div class="row">
+        <label class="col-md-2 control-label td-label">Assign To</label>
+        @if (user.IsManager == true)
         {
-
-            <label class="control-label">Assign To</label>
-            @Html.DropDownList("assignList", null, htmlAttributes: new { @class = "form-control" })
-            <input type="submit" value="Assign" class="btn btn-default" />
-        }
-    }
-    else
-    {
-        <label class="control-label">Assigned To</label>
-        <div>@Model.AssigneeName</div>
-    }
-    <label class="control-label">Created</label>
-    <pre>@Model.CreationDate</pre>
-
-    <label class="control-label">Updated</label>
-    <pre>@Model.UpdateDate</pre>
-
-    <pre>@Model.Description</pre>
-</div>
-
-<div class="row">
-
-    @foreach (var file in Model.Attachments)
-    {
-
-        @file.Uploader
-        @file.Uploaded.DateTime.ToString("MM-dd-yyyy")
-        @Html.ActionLink(file.FileName, "Download", "Attachment", new { id = file.FileHash }, new { target = "_blank" })
-    }
-
-    @using (Html.BeginForm("Upload", "Attachment", new { id = Model.Id },
-                                       FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
-        @Html.TextBox("file", new { }, new { type = "file" })
-        <input type="submit" value="Upload" class="btn btn-default" />
-    }
-
-</div>
-
-<div class="row">
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-    <div class="col-md-1">.col-md-1</div>
-</div>
-
-<div class="row">
-    @{ bool first = true; }
-    @foreach (var comment in @Model.Comments)
-    {
-        if (first)
-        {
-            first = false;
+            using (Html.BeginForm("Assign", "Ticket", new { id = Model.Id }, FormMethod.Post, new { id = "assignForm" }))
+            {
+                @Html.DropDownList("assignList", null, htmlAttributes: new { @class = "col-md-5 td-select", id = "assignList" })
+            }
         }
         else
         {
-            <hr style="border-bottom: solid" />
+            <div class="col-md-5 td-info">@Model.AssigneeName</div>
+        }
+    </div>
+
+    <div class="row">
+        <label class="col-md-2 control-label td-label">Status</label>
+        @if (user.IsManager || user.UserId == Model.AssigneeId)
+        {
+            using (Html.BeginForm("ChangeStatus", "Ticket", new { id = Model.Id }, FormMethod.Post, new { id = "statusForm" }))
+            {
+                @Html.DropDownList("statusList", null, htmlAttributes: new { @class = "col-md-3 td-select", id = "statusList" })
+            }
+        }
+        else
+        {
+            <div class="col-md-3 td-info">@Model.Status</div>
         }
 
-        <label class="control-label">Author</label>
-        <pre>@comment.PosterName</pre>
+        <label class="col-md-offset-2 col-md-2 control-label td-label">Severity</label>
+        <div class="col-md-3 td-info">@Model.Severity</div>
+    </div>
 
-        <label class="control-label">Date</label>
-        <pre>@comment.PostTime.ToString()</pre>
-        
-        <pre>@comment.Message</pre>
-    }
+    <div class="row">
+        <label class="col-md-2 control-label td-label">Created</label>
+        <div class="col-md-3 td-info">@Model.CreationDate</div>
+
+        <label class="col-md-offset-2 col-md-2 control-label td-label">Updated</label>
+        <div class="col-md-3 td-info">@Model.UpdateDate</div>
+    </div>
+
+    <pre class="col-md-12">@Model.Description</pre>
 </div>
+<h2>Attachments</h2>
+<div class="container-fluid">
 
+    @foreach (var file in Model.Attachments)
+    {
+        <div class="row">
+            <div class="col-md-3 td-info">@file.Uploader</div>
+            <div class="col-md-3 td-info">@file.Uploaded</div>
+            <div class="col-md-4 td-info">
+                @Html.ActionLink(file.FileName, "Download", "Attachment", new { id = file.FileHash }, new { target = "_blank" })
+            </div>
+        </div>
+    }
 
-<div class="row">
+    <div class="row">
+        @using (Html.BeginForm("Upload", "Attachment", new { id = Model.Id },
+                                       FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <label class="col-md-3 control-label td-label">Upload New File</label>
+            @Html.TextBox("file", new { }, new { type = "file", @class = "col-md-3 td-info" })
+            <input type="submit" value="Upload" class="btn btn-default col-md-1 td-info" />
+        }
+    </div>
+
+</div>
+<h2>Comments</h2>
+<div class="container-fluid">
+
+    @foreach (var comment in @Model.Comments)
+    {
+            <div class="row comment-box">
+                <label class="col-md-3 td-label">
+                    @comment.PosterName<br />
+                    @comment.PostTime
+                </label>
+                <pre class="col-md-9">@comment.Message</pre>
+           </div>
+    }
+
     @using (Html.BeginForm("Create", "Comment", new { id = Model.Id }))
     {
 
-        @Html.TextArea("Comment", "", 5, 15, new { style = "width: 100%; resize: none;" })<br />
-        <input type="submit" value="New Comment" class="btn btn-default" />
+        @Html.TextArea("Comment", "", 5, 15, new { @class = "col-md-12" })<br />
+        <input type="submit" value="New Comment" class="btn btn-default col-md-2" />
     }
 </div>
 
@@ -107,3 +113,23 @@
 <p>
     @Html.ActionLink("Back to List", "List")
 </p>
+
+@section Scripts {
+    <script type="text/javascript">
+        $( "#assignList" ).change(function()
+        {
+            if (confirm("Assign " + $("#assignList option:selected").text() + " to ticket?"))
+            {
+                $("#assignForm").submit();
+            }
+        });
+
+        $( "#statusList" ).change(function()
+        {
+            if (confirm("Change the ticket status to " + $("#statusList option:selected").text() + "?"))
+            {
+                $("#statusForm").submit();
+            }
+        });
+    </script>
+}

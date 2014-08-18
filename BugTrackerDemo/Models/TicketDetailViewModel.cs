@@ -21,6 +21,9 @@ namespace BugTrackerDemo.Models
             UpdateDate = ticket.UpdatedTime.ToString();
             Title = ticket.Title;
             Description = ticket.Description;
+            Severity = ticket.TicketSeverity.Type;
+            Status = ticket.TicketStatus.Status;
+            AssigneeId = ticket.AssigneeId;
 
             foreach (var item in ticket.TicketComments)
             {
@@ -52,6 +55,9 @@ namespace BugTrackerDemo.Models
         public string UpdateDate;
         public string Title;
         public string Description;
+        public string Severity;
+        public string Status;
+        public int? AssigneeId;
 
         public List<TicketCommentViewModel> Comments = new List<TicketCommentViewModel>();
         public List<TicketAttachmentModelView> Attachments = new List<TicketAttachmentModelView>();
