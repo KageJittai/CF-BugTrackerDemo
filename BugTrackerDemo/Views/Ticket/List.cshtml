@@ -23,7 +23,7 @@
 <div class="row">
     @using (Html.BeginForm("List", "Ticket", new { }, FormMethod.Get, htmlAttributes: new { id = "search-form" }))
     {
-        @Html.Hidden("page", Model.PageNumber);
+        @*Html.Hidden("page", "1")*@
         @Html.DropDownList("status", null, htmlAttributes: new { @class = "col-md-offset-6 col-md-2 td-select autoupdate" })
         @Html.DropDownList("severity", null, htmlAttributes: new { @class = "col-md-2 td-select autoupdate" })
         <div class="col-md-2 td-select">
@@ -34,7 +34,7 @@
 </div>
 <hr />
 
-<table id="TicketTable" class="table">
+<table id="TicketTable" class="table" style="text-align: center">
     <thead>
     <tr>
         <th>
@@ -66,7 +66,9 @@
             @if (@item.AssigneeId != null)
             { 
                 <br />
-                @Html.Raw(item.Assignee.FirstName + " " + item.Assignee.LastName + "(" + item.Assignee.Email + ")")
+                <span style="font-size: small">
+                    @Html.Raw(item.Assignee.FirstName + " " + item.Assignee.LastName + "(" + item.Assignee.Email + ")")
+                </span>
             }
         </td>
         <td>

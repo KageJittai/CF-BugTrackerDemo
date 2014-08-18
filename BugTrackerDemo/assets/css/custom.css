@@ -32,3 +32,21 @@
     height: 46px;
     padding: 1em;
 }
+
+table
+{
+    border-collapse:collapse;
+    border:1px solid #808080;
+}
+
+table td
+{
+    text-align: center;
+    border:1px solid #808080;
+}
+
+table th
+{ 
+    text-align: center;
+    border:1px solid #808080;
+}

@@ -44,6 +44,7 @@
           <Property Name="FileName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="FileHash" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="UploadDate" Type="datetimeoffset" Precision="7" Nullable="false" />
+          <Property Name="MemeType" Type="nvarchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="TicketComment">
           <Key>
@@ -562,6 +563,7 @@
           <Property Name="UploadDate" Type="DateTimeOffset" Nullable="false" Precision="7" />
           <NavigationProperty Name="Ticket" Relationship="BugTrackerModel.FK_TicketAttachment_Ticket" FromRole="TicketAttachment" ToRole="Ticket" />
           <NavigationProperty Name="User" Relationship="BugTrackerModel.FK_TicketAttachment_User" FromRole="TicketAttachment" ToRole="UserModel" />
+          <Property Name="MemeType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_TicketAttachment_Ticket">
           <End Type="BugTrackerModel.Ticket" Role="Ticket" Multiplicity="1" />
@@ -687,6 +689,7 @@
           <EntitySetMapping Name="TicketAttachments">
             <EntityTypeMapping TypeName="BugTrackerModel.TicketAttachment">
               <MappingFragment StoreEntitySet="TicketAttachment">
+                <ScalarProperty Name="MemeType" ColumnName="MemeType" />
                 <ScalarProperty Name="UploadDate" ColumnName="UploadDate" />
                 <ScalarProperty Name="FileHash" ColumnName="FileHash" />
                 <ScalarProperty Name="FileName" ColumnName="FileName" />

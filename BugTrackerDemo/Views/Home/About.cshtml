@@ -14,11 +14,32 @@
     <div class="col-md-6 col-md-offset-0">
         @anwser
     </div>
+    <hr />
 </div>
 <br />
 }
 
-@faq("How was BugSquasher created?", "BugSquasher was developed in Visual Studios 2013 for Web.  It uses SQL Server, C# and ASP.NET MVC")
-@faq("Why was BugSquasher created?", "It was mainly an educational exercise, and my first experience with Microsoft's Web Technologies ")
-@faq("What did I learn while creating BugSquasher?","I learned many things, this is the first application I've developed using the ASP.NET MVC Framework. As so it was a major learning experience. I learned far too many things to list on this page.")
+@faq("How do I start using BugSquasher?",
+     "Register or sign on on the top left hand conner of the site.")
 
+@faq("After I sign in, it says \"No Projects.\"",
+     "A admin must first assign a user to a role in a existing project, or create a new project, both tasks can be" +
+     "done via the admin menu for projects or users.")
+
+@faq("How do I make a new ticket?",
+     "After selecting the project with the drop down menu, click on the \"Submit new ticket\" link on the top left-hand side.")
+
+@faq("What does the submitter role do?",
+     "The submitter role allows a user to view all tickets, and submit a new ticket. " +
+     "As well as comment or add attachments on any existing tickets.")
+
+@faq("What does the developer role do?",
+     "Developers can assigned to ticket, view tickets, comment on a ticket or upload an attachment. " +
+     "They can also update the status on a ticket they have been assigned to.")
+
+@faq("What does the manager role do?",
+     "Managers on a ticket can assign a developer to a role, as well as update the status or severity of a ticket.")
+
+@faq("I've given a user the managemenet or developer role, but they can't submit a ticket.",
+     "You must give then the submitter role along with role if you want them to be able to submit tickets. " +
+     "Permissions are role based, not level based, so you must explicitly assign a role to a user.")

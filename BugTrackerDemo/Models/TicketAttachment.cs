@@ -20,6 +20,7 @@ namespace BugTrackerDemo.Models
         public string FileName { get; set; }
         public string FileHash { get; set; }
         public System.DateTimeOffset UploadDate { get; set; }
+        public string MemeType { get; set; }
     
         public virtual Ticket Ticket { get; set; }
         public virtual UserModel User { get; set; }

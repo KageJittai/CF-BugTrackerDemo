@@ -30,6 +30,7 @@ namespace BugTrackerDemo.Controllers
                 attachment.TicketId = ticket.Id;
                 attachment.UploaderId = (int)CurrentUser.UserId;
                 attachment.FileName = Path.GetFileName(file.FileName);
+                attachment.MemeType = file.ContentType;
 
                 var md5 = MD5.Create();
                 attachment.FileHash = string.Join("", md5.ComputeHash(file.InputStream).Select(x => x.ToString("x2")));
@@ -54,7 +55,7 @@ namespace BugTrackerDemo.Controllers
 
             TicketAttachment attachment = db.TicketAttachments.Where(m => m.FileHash == id).First();
 
-            return File("~/App_Data/uploads/" + attachment.FileHash, "application/force-download", attachment.FileName);
+            return File("~/App_Data/uploads/" + attachment.FileHash, attachment.MemeType);
         }
     }
 }
